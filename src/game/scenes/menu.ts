@@ -15,7 +15,7 @@ class Menu extends Scene {
             new MeshBasicMaterial()
         )
 
-        this.add(this.box)
+        this.scene.add(this.box)
 
         this.camera.position.set(3, 3, 3)
         this.camera.lookAt(0, 0, 0)
