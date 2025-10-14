@@ -1,35 +1,13 @@
+import Scene from "../scene"
+
 import {
-    BoxGeometry,
-    Color,
     Mesh,
-    MeshBasicMaterial,
-    PerspectiveCamera,
-    Scene
+    BoxGeometry,
+    MeshBasicMaterial
 } from "three/webgpu"
 
-import Game from "../game"
-
-class Menu {
-    private game: Game = null!
-
+class Menu extends Scene {
     private box: Mesh = null!
-
-    constructor() {
-        this.game = new Game()
-    }
-
-    init = () => {
-        this.game.scene = new Scene()
-        this.game.scene.background = new Color(0x000000)
-
-        this.game.camera = new PerspectiveCamera(60, this.game.width / this.game.height, 0.1, 1000)
-        this.game.camera.position.set(3, 3, 3)
-        this.game.camera.lookAt(0, 0, 0)
-
-        this.start()
-
-        this.game.updateFunction = this.update
-    }
 
     start = () => {
         this.box = new Mesh(
@@ -37,10 +15,13 @@ class Menu {
             new MeshBasicMaterial()
         )
 
-        this.game.scene?.add(this.box)
+        this.add(this.box)
+
+        this.camera.position.set(3, 3, 3)
+        this.camera.lookAt(0, 0, 0)
     }
 
-    update = () => {
+    update = (_time: DOMHighResTimeStamp, _delta: number) => {
         this.box.rotation.y += 0.01
     }
 }

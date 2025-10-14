@@ -13,10 +13,12 @@ class Game {
     scene: Scene | null = null
     camera: PerspectiveCamera | null = null
 
-    updateFunction: (() => void) | null = null
+    updateFunction: ((_time: DOMHighResTimeStamp, _delta: number) => void) | null = null
 
     width: number = 0
     height: number = 0
+
+    private lastTime: number = 0
 
     constructor() {
         if (Game.instanced) return Game.instanced
@@ -66,7 +68,10 @@ class Game {
     }
 
     update = async(_time: DOMHighResTimeStamp) => {
-        if (this.updateFunction) this.updateFunction()
+        const _delta: number = (_time - this.lastTime) / 1000
+        this.lastTime = _time
+
+        if (this.updateFunction) this.updateFunction(_time, _delta)
         if (this.scene && this.camera) this.renderer.renderAsync(this.scene, this.camera)
     }
 }
