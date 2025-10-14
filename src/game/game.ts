@@ -1,19 +1,27 @@
 import {
     WebGPURenderer,
     PerspectiveCamera,
-    Scene,
-    Color,
-    Mesh,
-    BoxGeometry,
-    MeshBasicNodeMaterial
+    Scene
 } from "three/webgpu"
 
-class Game {
-    private renderer: WebGPURenderer = null!
-    private scene: Scene = null!
-    private camera: PerspectiveCamera = null!
+import Menu from "./scenes/menu"
 
-    private box: Mesh = null!
+class Game {
+    static instanced: Game
+    private renderer: WebGPURenderer = null!
+
+    scene: Scene | null = null
+    camera: PerspectiveCamera | null = null
+
+    updateFunction: (() => void) | null = null
+
+    width: number = 0
+    height: number = 0
+
+    constructor() {
+        if (Game.instanced) return Game.instanced
+        Game.instanced = this
+    }
 
     init = (
         canvas: OffscreenCanvas,
@@ -21,47 +29,45 @@ class Game {
         height: number,
         pixelRatio: number
     ) => {
+        this.width = width
+        this.height = height
+
         this.renderer = new WebGPURenderer({ canvas: canvas, antialias: true })
         this.renderer.setSize(width, height, false)
         this.renderer.setPixelRatio(pixelRatio)
-
-        this.scene = new Scene()
-        this.scene.background = new Color(0x000000)
 
         this.camera = new PerspectiveCamera(60, width / height, 0.1, 1000)
         this.camera.aspect = width / height
         this.camera.updateProjectionMatrix()
 
-        //////////////////////////////////
-
-        this.box = new Mesh(
-            new BoxGeometry(),
-            new MeshBasicNodeMaterial()
-        )
-
-        this.scene.add(this.box)
-
-        this.camera.position.set(3, 3, 3)
-        this.camera.lookAt(0, 0, 0)
-
-        //////////////////////////////////
+        this.create()
 
         this.renderer.setAnimationLoop(this.update)
+    }
+
+    create = () => {
+        const menu: Menu = new Menu()
+        menu.init()
     }
 
     resize = (
         width: number,
         height: number
     ) => {
-        this.camera.aspect = width / height
-        this.camera.updateProjectionMatrix()
+        this.width = width
+        this.height = height
+
+        if (this.camera) {
+            this.camera.aspect = width / height
+            this.camera.updateProjectionMatrix()
+        }
+
         this.renderer.setSize(width, height, false)
     }
 
     update = async(_time: DOMHighResTimeStamp) => {
-        this.box.rotation.y += 0.01
-
-        this.renderer.renderAsync(this.scene, this.camera)
+        if (this.updateFunction) this.updateFunction()
+        if (this.scene && this.camera) this.renderer.renderAsync(this.scene, this.camera)
     }
 }
 

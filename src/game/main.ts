@@ -3,21 +3,17 @@ import Game from "./game"
 let game: Game = null!
 
 self.onmessage = (e: MessageEvent) => {
-    if (e.data.type === "init") {
-        const canvas: OffscreenCanvas = e.data.canvas
-        const width: number = e.data.width
-        const height: number = e.data.height
-        const pixelRatio: number = e.data.pixelRatio
-
-        if (canvas) {
-            game = new Game()
-            game.init(canvas, width, height, pixelRatio)
-        }
-    }
-    else if (e.data.type === "resize") {
-        const width: number = e.data.width
-        const height: number = e.data.height
-
-        if (game) game.resize(width, height)
+    switch (e.data.type) {
+        case "init":
+            if (e.data.canvas) {
+                game = new Game()
+                game.init(e.data.canvas, e.data.width, e.data.height, e.data.pixelRatio)
+            }
+            break
+        case "resize":
+            if (game) game.resize(e.data.width, e.data.height)
+            break
+        default:
+            console.log("Invalid type!")
     }
 }
