@@ -1,4 +1,4 @@
-import Scene from "../../core/scene"
+import Scene from "@engine/scene"
 
 import {
     Mesh,
