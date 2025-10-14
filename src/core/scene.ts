@@ -3,8 +3,7 @@ import Game from "./game"
 import {
     Color,
     Scene as _Scene,
-    PerspectiveCamera,
-    Object3D,
+    PerspectiveCamera
 } from "three/webgpu"
 
 class Scene {
@@ -15,7 +14,7 @@ class Scene {
 
     constructor() {
         this.game = new Game()
-        this.init()
+        queueMicrotask(() => this.init())
     }
 
     init = () => {

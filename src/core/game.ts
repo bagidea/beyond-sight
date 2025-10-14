@@ -4,8 +4,6 @@ import {
     Scene
 } from "three/webgpu"
 
-import Menu from "./scenes/menu"
-
 class Game {
     static instanced: Game
     private renderer: WebGPURenderer = null!
@@ -47,11 +45,6 @@ class Game {
         this.renderer.setAnimationLoop(this.update)
     }
 
-    create = () => {
-        const menu: Menu = new Menu()
-        menu.init()
-    }
-
     resize = (
         width: number,
         height: number
@@ -67,7 +60,9 @@ class Game {
         this.renderer.setSize(width, height, false)
     }
 
-    update = async(_time: DOMHighResTimeStamp) => {
+    protected create(){}
+
+    private update = async(_time: DOMHighResTimeStamp) => {
         const _delta: number = (_time - this.lastTime) / 1000
         this.lastTime = _time
 

@@ -1,12 +1,12 @@
-import Game from "./game"
+import Main from "./main"
 
-let game: Game = null!
+let game: Main = null!
 
 self.onmessage = (e: MessageEvent) => {
     switch (e.data.type) {
         case "init":
             if (e.data.canvas) {
-                game = new Game()
+                game = new Main()
                 game.init(e.data.canvas, e.data.width, e.data.height, e.data.pixelRatio)
             }
             break

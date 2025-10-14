@@ -4,7 +4,7 @@ window.onload = () => {
 
     const offscreen: OffscreenCanvas = canvas.transferControlToOffscreen()
 
-    const worker: Worker = new Worker(new URL("./main.ts", import.meta.url), { type: "module" })
+    const worker: Worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" })
 
     worker.postMessage({
         type: "init",

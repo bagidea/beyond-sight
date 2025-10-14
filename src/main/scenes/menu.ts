@@ -1,4 +1,4 @@
-import Scene from "../scene"
+import Scene from "../../core/scene"
 
 import {
     Mesh,
@@ -22,7 +22,7 @@ class Menu extends Scene {
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
-        this.box.rotation.y += 0.01
+        this.box.rotation.y += _delta
     }
 }
 
