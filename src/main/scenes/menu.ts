@@ -2,11 +2,14 @@ import Plugin from "@engine/plugin"
 import Scene from "@engine/scene"
 
 import {
+    Color,
     MathUtils,
     Mesh,
     MeshStandardNodeMaterial,
     NoColorSpace,
     PlaneGeometry,
+    RectAreaLight,
+    RectAreaLightNode,
     RepeatWrapping,
     SRGBColorSpace,
     Texture
@@ -18,6 +21,7 @@ import {
     float,
     color
 } from "three/tsl"
+import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLightTexturesLib.js"
 
 class Menu extends Scene {
     start = async() => {
@@ -81,6 +85,21 @@ class Menu extends Scene {
         this.cameraLookAt(0, 1, 0)
 
         // Lightings
+
+        RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
+
+        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.1, 10, 5)
+        frontAreaLight.position.set(0, 2.5, 5)
+
+        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 0.2, 10, 5)
+        leftAreaLight.position.set(-4.9, 2.5, 0)
+        leftAreaLight.rotation.y = MathUtils.degToRad(-90)
+
+        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 0.2, 10, 5)
+        rightAreaLight.position.set(4.9, 2.5, 0)
+        rightAreaLight.rotation.y = MathUtils.degToRad(90)
+
+        this.scene.add(frontAreaLight, leftAreaLight, rightAreaLight)
     }
 
     private setupTexture = (texture: Texture, x: number, y: number, colorSpace: string = SRGBColorSpace) => {
