@@ -2,7 +2,6 @@ import Plugin from "@engine/plugin"
 import Scene from "@engine/scene"
 
 import {
-    Color,
     Group,
     MathUtils,
     Mesh,
@@ -15,33 +14,47 @@ import {
     RepeatWrapping,
     SRGBColorSpace,
     Texture,
-    type Object3DEventMap
+    Color
+} from "three/webgpu"
+
+import type {
+    Object3DEventMap,
+    ReflectorNode
 } from "three/webgpu"
 
 import {
     texture,
     bumpMap,
     float,
-    color
+    color,
+    reflector
+} from "three/tsl"
+
+import type {
+    ShaderNodeObject
 } from "three/tsl"
 
 import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLightTexturesLib.js"
 import type { GLTF } from "three/examples/jsm/Addons.js"
 
 class Menu extends Scene {
-    start = async() => {
-        // Ground and Top
-
+    createGroundAndTop = async() => {
         const groundGeometry: PlaneGeometry = new PlaneGeometry(10, 10)
         const groundMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
 
         const groundImageBitmap: ImageBitmap = await Plugin.loadImageBitmap("textures/lavatile.jpg")
 
         const groundTexture: Texture = new Texture(groundImageBitmap)
-        this.setupTexture(groundTexture, 2, 2, NoColorSpace)
+        this.setupTexture(groundTexture, 5, 5, NoColorSpace)
+
+        const reflection: ShaderNodeObject<ReflectorNode> = reflector()
+        reflection.target.rotation.x = MathUtils.degToRad(-90)
+
+        this.scene.add(reflection.target)
 
         groundMaterial.colorNode = color(1, 1, 1)
-        groundMaterial.roughnessNode = texture(groundTexture).mul(0.4)
+        groundMaterial.envNode = reflection.mul(0.1)
+        groundMaterial.roughnessNode = texture(groundTexture).mul(0.3)
         groundMaterial.metalnessNode = float(1)
 
         const ground: Mesh = new Mesh(groundGeometry, groundMaterial)
@@ -52,9 +65,9 @@ class Menu extends Scene {
         top.rotation.x = MathUtils.degToRad(90)
 
         this.scene.add(ground, top)
+    }
 
-        // Walls
-
+    createWalls = async() => {
         const wallGeometry: PlaneGeometry = new PlaneGeometry(10, 5)
         const wallMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
 
@@ -83,7 +96,9 @@ class Menu extends Scene {
         wallRight.position.set(5, 2.5, 0)
 
         this.scene.add(wallBack, wallLeft, wallRight)
+    }
 
+    createModels = () => {
         // TV
 
         Plugin.gltfLoader.load("models/tv.glb", (data: GLTF) => {
@@ -91,20 +106,86 @@ class Menu extends Scene {
             model.scale.set(4, 4, 4)
             model.position.set(0, 0, -1)
 
+            const screenMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            screenMaterial.colorNode = color(0.27, 0.31, 0.45).mul(2)
+            screenMaterial.emissiveNode = color(0.27, 0.31, 0.45).mul(0.5)
+
+            const bodyMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            bodyMaterial.colorNode = color(0.4, 0.4, 0.4)
+            bodyMaterial.roughnessNode = float(0.45)
+
+            const darkMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            darkMaterial.colorNode = color(0.2, 0.2, 0.2)
+            darkMaterial.roughnessNode = float(0.2)
+            darkMaterial.metalnessNode = float(1)
+
+            const lightMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            lightMaterial.colorNode = color(1, 1, 1)
+            lightMaterial.roughnessNode = float(0.2)
+            lightMaterial.metalnessNode = float(1)
+
+            const borderInsideMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            borderInsideMaterial.colorNode = color(0, 0, 0)
+            borderInsideMaterial.metalnessNode = float(1)
+
             model.traverse((object: Object3D) => {
                 if (object instanceof Mesh) {
-                    if (object.name === "Screen") {
-                        const screenMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
-                        screenMaterial.colorNode = color(1, 1, 1)
-                        screenMaterial.emissiveNode = color(1, 1, 1)
-
-                        object.material = screenMaterial
+                    switch(object.name) {
+                        case "Screen":
+                            object.material = screenMaterial
+                            break
+                        case "Body":
+                            object.material = bodyMaterial
+                            break
+                        case "Border":
+                        case "LightProp":
+                            object.material = lightMaterial
+                            break
+                        case "DarkProp":
+                            object.material = darkMaterial
+                            break
+                        case "BorderInside":
+                            object.material = borderInsideMaterial
+                            break
                     }
                 }
             })
 
             this.scene.add(model)
         })
+    }
+
+    createLighting = () => {
+        RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
+
+        /*const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.025, 10, 5)
+        frontAreaLight.position.set(0, 2.5, 5)
+
+        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 0.01, 10, 5)
+        leftAreaLight.position.set(-4.9, 2.5, 0)
+        leftAreaLight.rotation.y = MathUtils.degToRad(-90)
+
+        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 0.01, 10, 5)
+        rightAreaLight.position.set(4.9, 2.5, 0)
+        rightAreaLight.rotation.y = MathUtils.degToRad(90)*/
+
+        const tvLight: RectAreaLight = new RectAreaLight(new Color(0.27, 0.31, 0.45), 2, 1.2, 1)
+        tvLight.position.set(-0.2, 0.9, -0.35)
+        tvLight.rotation.y = MathUtils.degToRad(180)
+
+        //this.scene.add(frontAreaLight, leftAreaLight, rightAreaLight, tvLight)
+        this.scene.add(tvLight)
+    }
+
+    start = () => {
+        // Ground and Top
+        this.createGroundAndTop()
+
+        // Walls
+        this.createWalls()
+
+        // Models
+        this.createModels()
 
         // Camera
 
@@ -112,21 +193,7 @@ class Menu extends Scene {
         this.cameraLookAt(0, 0.5, 0)
 
         // Lightings
-
-        RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
-
-        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.01, 10, 5)
-        frontAreaLight.position.set(0, 2.5, 5)
-
-        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 0.02, 10, 5)
-        leftAreaLight.position.set(-4.9, 2.5, 0)
-        leftAreaLight.rotation.y = MathUtils.degToRad(-90)
-
-        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 0.02, 10, 5)
-        rightAreaLight.position.set(4.9, 2.5, 0)
-        rightAreaLight.rotation.y = MathUtils.degToRad(90)
-
-        this.scene.add(frontAreaLight, leftAreaLight, rightAreaLight)
+        this.createLighting()
     }
 
     private setupTexture = (texture: Texture, x: number, y: number, colorSpace: string = SRGBColorSpace) => {

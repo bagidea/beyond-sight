@@ -29,6 +29,8 @@ class Scene {
         this.game.camera = new PerspectiveCamera(60, this.game.width / this.game.height, 0.1, 1000)
         this.camera = this.game.camera
 
+        this.game.initPostProcessing()
+
         this.start()
         this.game.updateFunction = this.update
     }

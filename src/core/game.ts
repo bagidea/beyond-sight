@@ -5,12 +5,30 @@ import {
     MathUtils,
     Vector3,
     Quaternion,
-    Euler
+    Euler,
+    PostProcessing,
+    PassNode,
+    TextureNode
 } from "three/webgpu"
+
+import {
+    emissive,
+    mrt,
+    output,
+    pass,
+} from "three/tsl"
+
+import type {
+    ShaderNodeObject
+} from "three/tsl"
+import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js"
 
 class Game {
     static instanced: Game
     private renderer: WebGPURenderer = null!
+
+    postProcessing: PostProcessing = null!
+    scenePass: ShaderNodeObject<PassNode> | null = null
 
     scene: Scene | null = null
     camera: PerspectiveCamera | null = null
@@ -52,9 +70,34 @@ class Game {
         this.camera.aspect = width / height
         this.camera.updateProjectionMatrix()
 
+        // PostProcessing //
+
+        this.postProcessing = new PostProcessing(this.renderer)
+        this.scenePass = null
+
+        ////////////////////
+
         this.create()
 
         this.renderer.setAnimationLoop(this.update)
+    }
+
+    initPostProcessing = () => {
+        if (this.scenePass || !this.scene || !this.camera) return
+
+        this.scenePass = pass(this.scene, this.camera)
+
+        this.scenePass.setMRT(mrt({
+            output,
+            emissive
+        }))
+
+        const outputPass: ShaderNodeObject<TextureNode> = this.scenePass.getTextureNode()
+        const emissivePass: ShaderNodeObject<TextureNode> = this.scenePass.getTextureNode("emissive")
+
+        const bloomPass = bloom(emissivePass, 2.5, 0.5)
+
+        this.postProcessing.outputNode = outputPass.add(bloomPass)
     }
 
     resize = (
@@ -81,7 +124,13 @@ class Game {
         this.cameraMove(_delta)
 
         if (this.updateFunction) this.updateFunction(_time, _delta)
-        if (this.scene && this.camera) this.renderer.renderAsync(this.scene, this.camera)
+
+        if (this.scene && this.camera) {
+            if (!this.scenePass)
+                this.renderer.renderAsync(this.scene, this.camera)
+            else
+                this.postProcessing.renderAsync()
+        }
     }
 
     cameraRotationUpdate = (rotationX: number, rotationY: number) => {
