@@ -3,12 +3,14 @@ import Game from "./game"
 import {
     Color,
     Scene as _Scene,
-    PerspectiveCamera
+    PerspectiveCamera,
+    WebGPURenderer
 } from "three/webgpu"
 
 class Scene {
     protected game: Game = null!
 
+    protected renderer: WebGPURenderer = null!
     protected camera: PerspectiveCamera = null!
     protected scene: _Scene = null!
 

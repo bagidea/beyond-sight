@@ -1,7 +1,8 @@
 import {
     WebGPURenderer,
     PerspectiveCamera,
-    Scene
+    Scene,
+    MathUtils
 } from "three/webgpu"
 
 class Game {
@@ -68,6 +69,17 @@ class Game {
 
         if (this.updateFunction) this.updateFunction(_time, _delta)
         if (this.scene && this.camera) this.renderer.renderAsync(this.scene, this.camera)
+    }
+
+    pointerDrag = (dx: number, dy: number, buttons: number) => {
+        if (this.camera) {
+            if (buttons & 2) {
+                this.camera.rotation.x -= dy
+                this.camera.rotation.x = Math.max(MathUtils.degToRad(-90), Math.min(MathUtils.degToRad(90), this.camera.rotation.x))
+
+                this.camera.rotation.y -= dx
+            }
+        }
     }
 }
 
