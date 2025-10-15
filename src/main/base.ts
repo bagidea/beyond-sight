@@ -43,4 +43,32 @@ window.onload = () => {
             buttons: e.buttons
         })
     })
+
+    // Keyboard Events
+
+    const keys: Record<string, boolean> = {}
+
+    window.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (!keys[e.code]) {
+            keys[e.code] = true
+
+            worker.postMessage({
+                type: "key",
+                code: e.code,
+                pressed: true
+            })
+        }
+    })
+
+    window.addEventListener("keyup", (e: KeyboardEvent) => {
+        if (keys[e.code]) {
+            keys[e.code] = false
+
+            worker.postMessage({
+                type: "key",
+                code: e.code,
+                pressed: false
+            })
+        }
+    })
 }

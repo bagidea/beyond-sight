@@ -4,7 +4,9 @@ import {
     Color,
     Scene as _Scene,
     PerspectiveCamera,
-    WebGPURenderer
+    WebGPURenderer,
+    Vector3,
+    Euler
 } from "three/webgpu"
 
 class Scene {
@@ -25,9 +27,6 @@ class Scene {
         this.scene = this.game.scene
 
         this.game.camera = new PerspectiveCamera(60, this.game.width / this.game.height, 0.1, 1000)
-        this.game.camera.position.set(3, 3, 3)
-        this.game.camera.lookAt(0, 0, 0)
-
         this.camera = this.game.camera
 
         this.start()
@@ -36,6 +35,18 @@ class Scene {
 
     protected start() {}
     protected update(_time: DOMHighResTimeStamp, _delta: number) {}
+
+    cameraLookAt = (x: number, y: number, z: number) => {
+        if (!this.camera) return
+
+        const target: Vector3 = new Vector3(x, y, z)
+        this.camera.lookAt(target)
+
+        const euler: Euler = new Euler().setFromQuaternion(this.camera.quaternion, "YXZ")
+
+        this.game.cameraRotationUpdate(euler.x, euler.y)
+    }
+
 }
 
 export default Scene

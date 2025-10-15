@@ -8,6 +8,8 @@ let lastY: number = 0
 
 const sensitivity: number = 0.005
 
+const keysState: Record<string, boolean> = {}
+
 self.onmessage = (e: MessageEvent) => {
     switch (e.data.type) {
         case "init":
@@ -41,6 +43,17 @@ self.onmessage = (e: MessageEvent) => {
 
                 game.pointerDrag(dx, dy, e.data.buttons)
             }
+
+            break
+        case "key":
+            keysState[e.data.code] = e.data.pressed
+
+            game.cameraKeys(
+                keysState["KeyW"],
+                keysState["KeyS"],
+                keysState["KeyA"],
+                keysState["KeyD"]
+            )
 
             break
         default:

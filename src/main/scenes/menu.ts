@@ -15,8 +15,8 @@ class Menu extends Scene {
 
         this.scene.add(box)
 
-        this.camera.position.set(0, 0, 3)
-        this.camera.lookAt(0, 0, 0)
+        this.camera.position.set(3, 3, 3)
+        this.cameraLookAt(0, 0, 0)
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
