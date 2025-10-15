@@ -158,23 +158,23 @@ class Menu extends Scene {
     createLighting = () => {
         RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
 
-        /*const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.025, 10, 5)
+        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.01, 10, 5)
         frontAreaLight.position.set(0, 2.5, 5)
 
-        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 0.01, 10, 5)
-        leftAreaLight.position.set(-4.9, 2.5, 0)
+        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 2, 10, 5)
+        leftAreaLight.position.set(-84.9, 2.5, 0)
         leftAreaLight.rotation.y = MathUtils.degToRad(-90)
 
-        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 0.01, 10, 5)
-        rightAreaLight.position.set(4.9, 2.5, 0)
-        rightAreaLight.rotation.y = MathUtils.degToRad(90)*/
+        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 2, 10, 5)
+        rightAreaLight.position.set(84.9, 2.5, 0)
+        rightAreaLight.rotation.y = MathUtils.degToRad(90)
 
         const tvLight: RectAreaLight = new RectAreaLight(new Color(0.27, 0.31, 0.45), 2, 1.2, 1)
         tvLight.position.set(-0.2, 0.9, -0.35)
         tvLight.rotation.y = MathUtils.degToRad(180)
 
-        //this.scene.add(frontAreaLight, leftAreaLight, rightAreaLight, tvLight)
-        this.scene.add(tvLight)
+        this.scene.add(frontAreaLight, leftAreaLight, rightAreaLight, tvLight)
+        //this.scene.add(tvLight)
     }
 
     start = () => {
