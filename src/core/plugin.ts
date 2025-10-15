@@ -1,6 +1,5 @@
-import {
-    ImageBitmapLoader
-} from "three/webgpu"
+import { ImageBitmapLoader } from "three/webgpu"
+import { GLTFLoader } from "three/examples/jsm/Addons.js"
 
 class Plugin {
     static imageBitmapLoader: ImageBitmapLoader = new ImageBitmapLoader().setOptions({ imageOrientation: "flipY" }).setPath(self.location.origin+"/")
@@ -17,6 +16,8 @@ class Plugin {
             )
         })
     }
+
+    static gltfLoader: GLTFLoader = new GLTFLoader().setPath(self.location.origin+"/")
 }
 
 export default Plugin

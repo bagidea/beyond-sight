@@ -3,16 +3,19 @@ import Scene from "@engine/scene"
 
 import {
     Color,
+    Group,
     MathUtils,
     Mesh,
     MeshStandardNodeMaterial,
     NoColorSpace,
+    Object3D,
     PlaneGeometry,
     RectAreaLight,
     RectAreaLightNode,
     RepeatWrapping,
     SRGBColorSpace,
-    Texture
+    Texture,
+    type Object3DEventMap
 } from "three/webgpu"
 
 import {
@@ -21,7 +24,9 @@ import {
     float,
     color
 } from "three/tsl"
+
 import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLightTexturesLib.js"
+import type { GLTF } from "three/examples/jsm/Addons.js"
 
 class Menu extends Scene {
     start = async() => {
@@ -79,23 +84,45 @@ class Menu extends Scene {
 
         this.scene.add(wallBack, wallLeft, wallRight)
 
+        // TV
+
+        Plugin.gltfLoader.load("models/tv.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.scale.set(4, 4, 4)
+            model.position.set(0, 0, -1)
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    if (object.name === "Screen") {
+                        const screenMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+                        screenMaterial.colorNode = color(1, 1, 1)
+                        screenMaterial.emissiveNode = color(1, 1, 1)
+
+                        object.material = screenMaterial
+                    }
+                }
+            })
+
+            this.scene.add(model)
+        })
+
         // Camera
 
         this.camera.position.set(0, 2, 5)
-        this.cameraLookAt(0, 1, 0)
+        this.cameraLookAt(0, 0.5, 0)
 
         // Lightings
 
         RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
 
-        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.1, 10, 5)
+        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.01, 10, 5)
         frontAreaLight.position.set(0, 2.5, 5)
 
-        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 0.2, 10, 5)
+        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 0.02, 10, 5)
         leftAreaLight.position.set(-4.9, 2.5, 0)
         leftAreaLight.rotation.y = MathUtils.degToRad(-90)
 
-        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 0.2, 10, 5)
+        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 0.02, 10, 5)
         rightAreaLight.position.set(4.9, 2.5, 0)
         rightAreaLight.rotation.y = MathUtils.degToRad(90)
 
