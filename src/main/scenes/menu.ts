@@ -45,6 +45,9 @@ class Menu extends Scene {
     private mage: Group<Object3DEventMap> = null!
     private mixers: AnimationMixer[] = []
 
+    private cameraX: number = 0
+    private cameraY: number = 0
+
     createGroundAndTop = async() => {
         const groundGeometry: PlaneGeometry = new PlaneGeometry(10, 10)
         const groundMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
@@ -420,7 +423,8 @@ class Menu extends Scene {
 
         // Camera
         this.camera.position.set(0, 2, 5.5)
-        this.cameraLookAt(0, 1, 0)
+        this.camera.lookAt(0, 1, 0)
+        //this.cameraLookAt(0, 1, 0)
 
         // Lightings
         this.createLighting()
@@ -440,6 +444,18 @@ class Menu extends Scene {
         this.mixers.forEach((mixer: AnimationMixer) => {
             mixer.update(_delta)
         })
+
+        //console.log(this.game.pointerX+" : "+this.game.pointerY)
+
+        this.cameraX += (this.game.pointerX - this.cameraX) / 20
+        this.cameraY += (this.game.pointerY - this.cameraY) / 20
+
+        this.camera.position.x = this.cameraX
+        this.camera.position.y = 2 - this.cameraY
+        this.camera.position.z = 5.5 - Math.cos(_time * 0.0005) * 0.35
+
+        this.camera.lookAt(0, 1, 0)
+        //this.cameraLookAt(0, 1, 0)
     }
 }
 

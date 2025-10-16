@@ -44,6 +44,8 @@ self.onmessage = (e: MessageEvent) => {
                 game.pointerDrag(dx, dy, e.data.buttons)
             }
 
+            game.pointerUpdate(e.data.x / e.data.width, e.data.y / e.data.height)
+
             break
         case "key":
             keysState[e.data.code] = e.data.pressed

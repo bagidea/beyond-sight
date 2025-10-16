@@ -39,6 +39,9 @@ class Game {
     width: number = 0
     height: number = 0
 
+    pointerX: number = 0
+    pointerY: number = 0
+
     private lastTime: number = 0
 
     private rotationX: number = 0
@@ -157,6 +160,14 @@ class Game {
 
             this.camera.quaternion.copy(quaternion)
         }
+    }
+
+    pointerUpdate = (
+        px: number,
+        py: number
+    ) => {
+        this.pointerX = px
+        this.pointerY = py
     }
 
     cameraMove = (_delta: number) => {

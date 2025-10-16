@@ -25,7 +25,7 @@ window.onload = () => {
     // Pointer Events
 
     canvas.addEventListener("contextmenu", (e: PointerEvent) => e.preventDefault())
-    canvas.addEventListener("pointerup", () => worker.postMessage({ type: "pointerup" }))
+    /*canvas.addEventListener("pointerup", () => worker.postMessage({ type: "pointerup" }))
 
     canvas.addEventListener("pointerdown", (e: PointerEvent) => {
         worker.postMessage({
@@ -33,19 +33,21 @@ window.onload = () => {
             x: e.clientX,
             y: e.clientY
         })
-    })
+    })*/
 
     canvas.addEventListener("pointermove", (e: PointerEvent) => {
         worker.postMessage({
             type: "pointermove",
             x: e.clientX,
             y: e.clientY,
+            width: window.innerWidth,
+            height: window.innerHeight,
             buttons: e.buttons
         })
     })
 
     // Keyboard Events
-
+/*
     const keys: Record<string, boolean> = {}
 
     window.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -71,4 +73,5 @@ window.onload = () => {
             })
         }
     })
+*/
 }
