@@ -323,7 +323,7 @@ class Menu extends Scene {
         Plugin.gltfLoader.load("models/killer.glb", (data: GLTF) => {
             const model: Group<Object3DEventMap> = data.scene
             model.position.set(-2.2, 0, 2)
-            model.rotation.y = MathUtils.degToRad(45)
+            model.rotation.y = MathUtils.degToRad(60)
 
             model.traverse((object: Object3D) => {
                 if (object instanceof Mesh) {
@@ -331,6 +331,8 @@ class Menu extends Scene {
                         case "Eyes":
                             object.material.emissiveIntensity = 0.3
                             break
+                        default:
+                            object.material.roughness = 0.7
                     }
                 }
             })
@@ -342,6 +344,40 @@ class Menu extends Scene {
             mixer.clipAction(animations[5]).play()
 
             this.mixers.push(mixer)
+
+            this.scene.add(model)
+        })
+
+        // The Deceased
+        Plugin.gltfLoader.load("models/the_deceased.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(1, 0, 2.5)
+            model.rotation.y = MathUtils.degToRad(45)
+
+            /*model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Eyes":
+                            object.material.roughness = 0.5
+                            object.material.emissive = new Color(0, 0, 0)
+                            object.material.emissiveIntensity = 1
+                            break
+                        default:
+                            object.material.transparent = true
+                            object.material.opacity = 0.05
+                            object.material.emissive = new Color(0.5, 1, 1)
+                            object.material.emissiveIntensity = 0.01
+                    }
+                }
+            })*/
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.clipAction(animations[2]).play()
+
+            mixer.update(0)
+            //this.mixers.push(mixer)
 
             this.scene.add(model)
         })
