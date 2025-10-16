@@ -15,7 +15,9 @@ import {
     SRGBColorSpace,
     Texture,
     Color,
-    AnimationClip
+    AnimationClip,
+    PointLight,
+    MeshStandardMaterial
 } from "three/webgpu"
 
 import {
@@ -40,6 +42,7 @@ import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLigh
 import type { GLTF } from "three/examples/jsm/Addons.js"
 
 class Menu extends Scene {
+    private mage: Group<Object3DEventMap> = null!
     private mixers: AnimationMixer[] = []
 
     createGroundAndTop = async() => {
@@ -57,9 +60,9 @@ class Menu extends Scene {
         this.scene.add(reflection.target)
 
         groundMaterial.colorNode = color(1, 1, 1)
-        groundMaterial.envNode = reflection.mul(0.1)
+        groundMaterial.envNode = reflection.mul(0.2)
         groundMaterial.roughnessNode = texture(groundTexture).mul(0.3)
-        groundMaterial.metalnessNode = float(1)
+        groundMaterial.metalnessNode = float(0.9)
 
         const ground: Mesh = new Mesh(groundGeometry, groundMaterial)
         ground.rotation.x = MathUtils.degToRad(-90)
@@ -162,6 +165,9 @@ class Menu extends Scene {
             const model: Group<Object3DEventMap> = data.scene
             model.position.set(-3, 0, -3.5)
 
+            const material: MeshStandardMaterial = new MeshStandardMaterial()
+            let isNew: boolean = false
+
             model.traverse((object: Object3D) => {
                 if (object instanceof Mesh) {
                     switch (object.name) {
@@ -171,8 +177,14 @@ class Menu extends Scene {
                         case "Helmet":
                         case "Axe":
                         case "Shield":
-                            object.material.roughness = 0.3
-                            object.material.metalness = 1
+                            if (!isNew) {
+                                isNew = true
+                                material.map = object.material.map
+                                material.roughness = 0.2
+                                material.metalness = 0.5
+                            }
+
+                            object.material = material
                             break
                     }
                 }
@@ -203,7 +215,7 @@ class Menu extends Scene {
                         case "Blade":
                         case "Shield":
                             object.material.roughness = 0.2
-                            object.material.metalness = 1
+                            object.material.metalness = 0.5
                             break
                     }
                 }
@@ -222,7 +234,7 @@ class Menu extends Scene {
         // Skeleton Rogue
         Plugin.gltfLoader.load("models/skeleton_rogue.glb", (data: GLTF) => {
             const model: Group<Object3DEventMap> = data.scene
-            model.position.set(-0.6, 0.5, -1.8)
+            model.position.set(-0.55, 0.5, -1.9)
 
             model.traverse((object: Object3D) => {
                 if (object instanceof Mesh) {
@@ -233,7 +245,7 @@ class Menu extends Scene {
                         case "Crossbow":
                         case "Quiver":
                             object.material.roughness = 0.2
-                            object.material.metalness = 1
+                            object.material.metalness = 0.5
                             break
                     }
                 }
@@ -248,23 +260,59 @@ class Menu extends Scene {
 
             this.scene.add(model)
         })
+
+        // Skeleton Mage
+        Plugin.gltfLoader.load("models/skeleton_mage.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(3, 1.25, -3)
+
+            this.mage = model
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Eyes":
+                            object.material.emissiveIntensity = 0.5
+                            break
+                        case "Staff":
+                            object.material.roughness = 0.2
+                            object.material.metalness = 0.3
+                            break
+                    }
+                }
+            })
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.timeScale = 0.2
+            mixer.clipAction(animations[3]).play()
+            mixer.clipAction(animations[5]).play()
+
+            this.mixers.push(mixer)
+
+            this.scene.add(model)
+        })
     }
 
     createLighting = () => {
         RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
 
-        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.05, 10, 5)
-        frontAreaLight.position.set(0, 2.5, 5)
+        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 1, 5, 5)
+        frontAreaLight.position.set(0, 10, 5)
+        frontAreaLight.lookAt(0, 1, 0)
 
-        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 5, 10, 5)
-        leftAreaLight.position.set(-84.9, 2.5, 0)
-        leftAreaLight.rotation.y = MathUtils.degToRad(-90)
+        //const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 10, 2, 2)
+        const leftAreaLight: RectAreaLight = new RectAreaLight(0x0000ff, 5, 3, 3)
+        leftAreaLight.position.set(-10, 2.5, 6)
+        leftAreaLight.rotation.y = MathUtils.degToRad(-60)
 
-        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 5, 10, 5)
-        rightAreaLight.position.set(84.9, 2.5, 0)
-        rightAreaLight.rotation.y = MathUtils.degToRad(90)
+        //const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 10, 2, 2)
+        const rightAreaLight: RectAreaLight = new RectAreaLight(0xff0000, 5, 3, 3)
+        rightAreaLight.position.set(10, 2.5, 6)
+        rightAreaLight.rotation.y = MathUtils.degToRad(60)
 
-        const tvLight: RectAreaLight = new RectAreaLight(new Color(0.27, 0.31, 0.45), 2, 1.2, 1)
+        const tvLight: RectAreaLight = new RectAreaLight(new Color(0.27, 0.31, 0.45), 2, 1.4, 0.95)
         tvLight.position.set(-0.2, 0.9, -0.35)
         tvLight.rotation.y = MathUtils.degToRad(180)
 
@@ -283,8 +331,8 @@ class Menu extends Scene {
         this.createModels()
 
         // Camera
-        this.camera.position.set(0, 2, 5)
-        this.cameraLookAt(0, 0.5, 0)
+        this.camera.position.set(0, 2, 5.5)
+        this.cameraLookAt(0, 1, 0)
 
         // Lightings
         this.createLighting()
@@ -299,6 +347,8 @@ class Menu extends Scene {
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
+        if (this.mage) this.mage.position.y = Math.sin(_time * 0.001) * 0.3 + 1.25
+
         this.mixers.forEach((mixer: AnimationMixer) => {
             mixer.update(_delta)
         })
