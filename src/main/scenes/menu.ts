@@ -472,12 +472,12 @@ class Menu extends Scene {
 
         //console.log(this.game.pointerX+" : "+this.game.pointerY)
 
-        this.cameraX += (this.game.pointerX - this.cameraX) / 20
-        this.cameraY += (this.game.pointerY - this.cameraY) / 20
+        this.cameraX += (this.game.pointerX - this.cameraX) / 50
+        this.cameraY += (this.game.pointerY - this.cameraY) / 50
 
-        this.camera.position.x = this.cameraX
-        this.camera.position.y = 2 - this.cameraY
-        this.camera.position.z = 5.5 - Math.cos(_time * 0.0005) * 0.35
+        this.camera.position.x = this.cameraX * 2 - 1
+        this.camera.position.y = 2 - this.cameraY + 0.5
+        this.camera.position.z = 6 - Math.cos(_time * 0.0005) * 0.4
 
         this.camera.lookAt(0, 1, 0)
         //this.cameraLookAt(0, 1, 0)

@@ -24,6 +24,16 @@ const App = () => {
         <div className="game-gui_description">
           <div className="game-gui_description-top">
             <img src="LOGO_jam.png" />
+
+            <div>
+              Hello! This project was created for the GameDev.tv Halloween Jam 2025.
+            </div>
+            <div>
+              I’m really happy to be part of this event. it’s actually my very first Game Jam!
+            </div>
+            <div>
+              I hope you enjoy playing my game as much as I enjoyed making it.
+            </div>
           </div>
         </div>
       </div>
