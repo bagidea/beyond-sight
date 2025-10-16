@@ -181,6 +181,37 @@ class Menu extends Scene {
             const animations: AnimationClip[] = data.animations
 
             const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.timeScale = 0.5
+            mixer.clipAction(animations[2]).play()
+
+            this.mixers.push(mixer)
+
+            this.scene.add(model)
+        })
+
+        // Skeleton Minion
+        Plugin.gltfLoader.load("models/skeleton_minion.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(1.8, 0, 0)
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Eyes":
+                            object.material.emissiveIntensity = 0.5
+                            break
+                        case "Blade":
+                        case "Shield":
+                            object.material.roughness = 0.2
+                            object.material.metalness = 1
+                            break
+                    }
+                }
+            })
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
             mixer.clipAction(animations[2]).play()
 
             this.mixers.push(mixer)
