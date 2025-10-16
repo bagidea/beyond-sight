@@ -16,8 +16,8 @@ import {
     Texture,
     Color,
     AnimationClip,
-    PointLight,
-    MeshStandardMaterial
+    MeshStandardMaterial,
+    BoxGeometry
 } from "three/webgpu"
 
 import {
@@ -78,8 +78,10 @@ class Menu extends Scene {
         const wallGeometry: PlaneGeometry = new PlaneGeometry(10, 5)
         const wallMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
 
-        const wallDiffuseImageBitmap: ImageBitmap = await Plugin.loadImageBitmap("textures/brick_diffuse.jpg")
-        const wallBumpImageBitmap: ImageBitmap = await Plugin.loadImageBitmap("textures/brick_bump.jpg")
+        //const wallDiffuseImageBitmap: ImageBitmap = await Plugin.loadImageBitmap("textures/brick_diffuse.jpg")
+        //const wallBumpImageBitmap: ImageBitmap = await Plugin.loadImageBitmap("textures/brick_bump.jpg")
+        const wallDiffuseImageBitmap: ImageBitmap = await Plugin.loadImageBitmap("textures/damaged_plaster_diff_1k.jpg")
+        const wallBumpImageBitmap: ImageBitmap = await Plugin.loadImageBitmap("textures/damaged_plaster_nor_gl_1k.jpg")
 
         const wallDiffuseTexture: Texture = new Texture(wallDiffuseImageBitmap)
         this.setupTexture(wallDiffuseTexture, 2, 1)
@@ -89,7 +91,8 @@ class Menu extends Scene {
 
         wallMaterial.colorNode = texture(wallDiffuseTexture)
         wallMaterial.normalNode = bumpMap(texture(wallBumpTexture))
-        wallMaterial.roughnessNode = float(0.3)
+        wallMaterial.roughnessNode = float(0.4)
+        wallMaterial.metalnessNode = float(0.2)
 
         const wallBack: Mesh = new Mesh(wallGeometry, wallMaterial)
         wallBack.position.set(0, 2.5, -5)
@@ -103,6 +106,28 @@ class Menu extends Scene {
         wallRight.position.set(5, 2.5, 0)
 
         this.scene.add(wallBack, wallLeft, wallRight)
+
+        // Wall Boxs
+
+        const boxGeometry: BoxGeometry = new BoxGeometry(0.5, 5, 0.5)
+        const boxMaterial: MeshStandardNodeMaterial = wallMaterial.clone()
+
+        const boxDiffuseTexture: Texture = wallDiffuseTexture.clone()
+        this.setupTexture(boxDiffuseTexture, 0.5, 2)
+
+        const boxBumpTexture: Texture = wallBumpTexture.clone()
+        this.setupTexture(boxBumpTexture, 0.5, 2)
+
+        boxMaterial.colorNode = texture(boxDiffuseTexture)
+        boxMaterial.normalNode = bumpMap(texture(boxBumpTexture))
+
+        const leftBox: Mesh = new Mesh(boxGeometry, boxMaterial)
+        leftBox.position.set(-4.75, 2.5, -4.75)
+
+        const rightBox: Mesh = leftBox.clone()
+        rightBox.position.set(4.75, 2.5, -4.5)
+
+        this.scene.add(leftBox, rightBox)
     }
 
     createModels = () => {
@@ -172,7 +197,7 @@ class Menu extends Scene {
                 if (object instanceof Mesh) {
                     switch (object.name) {
                         case "Eyes":
-                            object.material.emissiveIntensity = 0.5
+                            object.material.emissiveIntensity = 0.3
                             break
                         case "Helmet":
                         case "Axe":
@@ -210,7 +235,7 @@ class Menu extends Scene {
                 if (object instanceof Mesh) {
                     switch (object.name) {
                         case "Eyes":
-                            object.material.emissiveIntensity = 0.5
+                            object.material.emissiveIntensity = 0.3
                             break
                         case "Blade":
                         case "Shield":
@@ -240,7 +265,7 @@ class Menu extends Scene {
                 if (object instanceof Mesh) {
                     switch (object.name) {
                         case "Eyes":
-                            object.material.emissiveIntensity = 0.5
+                            object.material.emissiveIntensity = 0.3
                             break
                         case "Crossbow":
                         case "Quiver":
@@ -272,7 +297,7 @@ class Menu extends Scene {
                 if (object instanceof Mesh) {
                     switch (object.name) {
                         case "Eyes":
-                            object.material.emissiveIntensity = 0.5
+                            object.material.emissiveIntensity = 0.3
                             break
                         case "Staff":
                             object.material.roughness = 0.2
@@ -293,12 +318,39 @@ class Menu extends Scene {
 
             this.scene.add(model)
         })
+
+        // Killer
+        Plugin.gltfLoader.load("models/killer.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(-2.2, 0, 2)
+            model.rotation.y = MathUtils.degToRad(45)
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Eyes":
+                            object.material.emissiveIntensity = 0.3
+                            break
+                    }
+                }
+            })
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.timeScale = 0.3
+            mixer.clipAction(animations[5]).play()
+
+            this.mixers.push(mixer)
+
+            this.scene.add(model)
+        })
     }
 
     createLighting = () => {
         RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
 
-        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 1, 5, 5)
+        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.5, 5, 5)
         frontAreaLight.position.set(0, 10, 5)
         frontAreaLight.lookAt(0, 1, 0)
 
