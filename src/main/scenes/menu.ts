@@ -14,12 +14,14 @@ import {
     RepeatWrapping,
     SRGBColorSpace,
     Texture,
-    Color
+    Color,
+    AnimationClip
 } from "three/webgpu"
 
-import type {
-    Object3DEventMap,
-    ReflectorNode
+import {
+    AnimationMixer,
+    type Object3DEventMap,
+    type ReflectorNode
 } from "three/webgpu"
 
 import {
@@ -38,6 +40,8 @@ import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLigh
 import type { GLTF } from "three/examples/jsm/Addons.js"
 
 class Menu extends Scene {
+    private mixers: AnimationMixer[] = []
+
     createGroundAndTop = async() => {
         const groundGeometry: PlaneGeometry = new PlaneGeometry(10, 10)
         const groundMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
@@ -100,7 +104,6 @@ class Menu extends Scene {
 
     createModels = () => {
         // TV
-
         Plugin.gltfLoader.load("models/tv.glb", (data: GLTF) => {
             const model: Group<Object3DEventMap> = data.scene
             model.scale.set(4, 4, 4)
@@ -130,7 +133,7 @@ class Menu extends Scene {
 
             model.traverse((object: Object3D) => {
                 if (object instanceof Mesh) {
-                    switch(object.name) {
+                    switch (object.name) {
                         case "Screen":
                             object.material = screenMaterial
                             break
@@ -153,19 +156,50 @@ class Menu extends Scene {
 
             this.scene.add(model)
         })
+
+        // Skeleton Warrior
+        Plugin.gltfLoader.load("models/skeleton_warrior.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(-3, 0, -3.5)
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Eyes":
+                            object.material.emissiveIntensity = 0.5
+                            break
+                        case "Helmet":
+                        case "Axe":
+                        case "Shield":
+                            object.material.roughness = 0.3
+                            object.material.metalness = 1
+                            break
+                    }
+                }
+            })
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.clipAction(animations[2]).play()
+
+            this.mixers.push(mixer)
+
+            this.scene.add(model)
+        })
     }
 
     createLighting = () => {
         RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
 
-        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.01, 10, 5)
+        const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.05, 10, 5)
         frontAreaLight.position.set(0, 2.5, 5)
 
-        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 2, 10, 5)
+        const leftAreaLight: RectAreaLight = new RectAreaLight(new Color(0.247, 0.68, 1), 5, 10, 5)
         leftAreaLight.position.set(-84.9, 2.5, 0)
         leftAreaLight.rotation.y = MathUtils.degToRad(-90)
 
-        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 2, 10, 5)
+        const rightAreaLight: RectAreaLight = new RectAreaLight(new Color(0.95, 0.67, 0.67), 5, 10, 5)
         rightAreaLight.position.set(84.9, 2.5, 0)
         rightAreaLight.rotation.y = MathUtils.degToRad(90)
 
@@ -188,7 +222,6 @@ class Menu extends Scene {
         this.createModels()
 
         // Camera
-
         this.camera.position.set(0, 2, 5)
         this.cameraLookAt(0, 0.5, 0)
 
@@ -205,6 +238,9 @@ class Menu extends Scene {
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
+        this.mixers.forEach((mixer: AnimationMixer) => {
+            mixer.update(_delta)
+        })
     }
 }
 

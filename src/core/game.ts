@@ -8,7 +8,8 @@ import {
     Euler,
     PostProcessing,
     PassNode,
-    TextureNode
+    TextureNode,
+    ACESFilmicToneMapping
 } from "three/webgpu"
 
 import {
@@ -65,6 +66,7 @@ class Game {
         this.renderer = new WebGPURenderer({ canvas: canvas, antialias: true })
         this.renderer.setSize(width, height, false)
         this.renderer.setPixelRatio(pixelRatio)
+        this.renderer.toneMapping = ACESFilmicToneMapping
 
         this.camera = new PerspectiveCamera(60, width / height, 0.1, 1000)
         this.camera.aspect = width / height
