@@ -218,6 +218,36 @@ class Menu extends Scene {
 
             this.scene.add(model)
         })
+
+        // Skeleton Rogue
+        Plugin.gltfLoader.load("models/skeleton_rogue.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(-0.6, 0.5, -1.8)
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Eyes":
+                            object.material.emissiveIntensity = 0.5
+                            break
+                        case "Crossbow":
+                        case "Quiver":
+                            object.material.roughness = 0.2
+                            object.material.metalness = 1
+                            break
+                    }
+                }
+            })
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.clipAction(animations[2]).play()
+
+            this.mixers.push(mixer)
+
+            this.scene.add(model)
+        })
     }
 
     createLighting = () => {
