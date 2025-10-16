@@ -31,7 +31,14 @@ import {
     bumpMap,
     float,
     color,
-    reflector
+    reflector,
+    fract,
+    sin,
+    Fn,
+    vec4,
+    vec3,
+    time,
+    uv
 } from "three/tsl"
 
 import type {
@@ -140,9 +147,27 @@ class Menu extends Scene {
             model.scale.set(4, 4, 4)
             model.position.set(0, 0, -1)
 
+            // @ts-ignore
+            const noise21 = Fn(({ p, ta, tb }) => {
+                return fract(sin(p.x.mul(ta).add(p.y.mul(tb))).mul(5678))
+            })
+
+            const frag = Fn(() => {
+                const uvCoord = uv()
+                const t = time.add(123.0)
+                const ta = t.mul(0.654321)
+                const tb = t.mul(ta.mul(0.123456))
+                // @ts-ignore
+                const c = noise21({ p: uvCoord, ta, tb })
+                const col = vec3(c)
+
+                return vec4(col, 1.0)
+            })
+
             const screenMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
-            screenMaterial.colorNode = color(0.27, 0.31, 0.45).mul(2)
-            screenMaterial.emissiveNode = color(0.27, 0.31, 0.45).mul(0.5)
+            //screenMaterial.colorNode = color(0.27, 0.31, 0.45).mul(2)
+            screenMaterial.colorNode = frag().xyz
+            screenMaterial.emissiveNode = color(0.27, 0.31, 0.45).mul(0.4).sub(frag().xyz.mul(0.2)).mul(2)
 
             const bodyMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
             bodyMaterial.colorNode = color(0.4, 0.4, 0.4)
