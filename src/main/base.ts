@@ -47,8 +47,8 @@ window.onload = () => {
     })
 
     // Keyboard Events
-/*
-    const keys: Record<string, boolean> = {}
+
+    /*const keys: Record<string, boolean> = {}
 
     window.addEventListener("keydown", (e: KeyboardEvent) => {
         if (!keys[e.code]) {
@@ -72,6 +72,15 @@ window.onload = () => {
                 pressed: false
             })
         }
-    })
-*/
+    })*/
+
+    ///////////// Game GUI ///////////////
+
+    const main_menu: HTMLDivElement = document.getElementById("main_menu") as HTMLDivElement
+    main_menu.classList.add("open")
+
+    const main_description: HTMLDivElement = document.getElementById("main_description") as HTMLDivElement
+    main_description.classList.add("open")
+
+    /////////////////////////////////////
 }
