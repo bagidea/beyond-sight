@@ -138,6 +138,12 @@ class Game {
         }
     }
 
+    action = (self: Window & typeof globalThis, open: boolean, delay: number = 0) => {
+        setTimeout(() => {
+            self.postMessage({ type: "main_action", action: open })
+        }, delay * 1000);
+    }
+
     cameraRotationUpdate = (rotationX: number, rotationY: number) => {
         this.rotationX = rotationX
         this.rotationY = rotationY

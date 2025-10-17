@@ -77,10 +77,29 @@ window.onload = () => {
     ///////////// Game GUI ///////////////
 
     const main_menu: HTMLDivElement = document.getElementById("main_menu") as HTMLDivElement
-    main_menu.classList.add("open")
-
     const main_description: HTMLDivElement = document.getElementById("main_description") as HTMLDivElement
-    main_description.classList.add("open")
+
+    const main_action = (action: boolean) => {
+        if (action) {
+            main_menu.classList.add("open")
+            main_description.classList.add("open")
+        } else {
+            main_menu.classList.remove("open")
+            main_description.classList.remove("open")
+        }
+    }
 
     /////////////////////////////////////
+
+    worker.onmessage = (e: MessageEvent) => {
+        switch (e.data.type) {
+            case "main_action":
+                main_action(e.data.action)
+
+                break
+            case "game_action":
+            default:
+                console.log("Invalid type! [ return ]")
+        }
+    }
 }
