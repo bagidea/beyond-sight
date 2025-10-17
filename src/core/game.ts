@@ -26,6 +26,7 @@ import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js"
 
 class Game {
     static instanced: Game
+    private self: Window & typeof globalThis = null!
     private renderer: WebGPURenderer = null!
 
     postProcessing: PostProcessing = null!
@@ -58,11 +59,14 @@ class Game {
     }
 
     init = (
+        self: Window & typeof globalThis,
         canvas: OffscreenCanvas,
         width: number,
         height: number,
         pixelRatio: number
     ) => {
+        this.self = self
+
         this.width = width
         this.height = height
 
@@ -138,9 +142,9 @@ class Game {
         }
     }
 
-    action = (self: Window & typeof globalThis, open: boolean, delay: number = 0) => {
+    action = (action: string, open: boolean, delay: number = 0) => {
         setTimeout(() => {
-            self.postMessage({ type: "main_action", action: open })
+            this.self.postMessage({ type: action, action: open })
         }, delay * 1000);
     }
 

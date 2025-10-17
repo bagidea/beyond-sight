@@ -55,6 +55,9 @@ class Menu extends Scene {
     private cameraX: number = 0
     private cameraY: number = 0
 
+    private loaded: number = 0
+    private maxLoad: number = 10
+
     createGroundAndTop = async() => {
         const groundGeometry: PlaneGeometry = new PlaneGeometry(10, 10)
         const groundMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
@@ -82,6 +85,8 @@ class Menu extends Scene {
         top.rotation.x = MathUtils.degToRad(90)
 
         this.scene.add(ground, top)
+
+        this.loadedAction()
     }
 
     createWalls = async() => {
@@ -138,6 +143,8 @@ class Menu extends Scene {
         rightBox.position.set(4.75, 2.5, -4.5)
 
         this.scene.add(leftBox, rightBox)
+
+        this.loadedAction()
     }
 
     createModels = () => {
@@ -211,6 +218,8 @@ class Menu extends Scene {
             })
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
 
         // Skeleton Warrior
@@ -252,6 +261,8 @@ class Menu extends Scene {
             this.mixers.push(mixer)
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
 
         // Skeleton Minion
@@ -282,6 +293,8 @@ class Menu extends Scene {
             this.mixers.push(mixer)
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
 
         // Skeleton Rogue
@@ -312,6 +325,8 @@ class Menu extends Scene {
             this.mixers.push(mixer)
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
 
         // Skeleton Mage
@@ -345,6 +360,8 @@ class Menu extends Scene {
             this.mixers.push(mixer)
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
 
         // Killer
@@ -374,6 +391,8 @@ class Menu extends Scene {
             this.mixers.push(mixer)
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
 
         // The Deceased
@@ -408,6 +427,8 @@ class Menu extends Scene {
             //this.mixers.push(mixer)
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
     }
 
@@ -434,6 +455,19 @@ class Menu extends Scene {
 
         this.scene.add(frontAreaLight, leftAreaLight, rightAreaLight, tvLight)
         //this.scene.add(tvLight)
+
+        this.loadedAction()
+    }
+
+    guiInit = () => {
+        this.game.action("loading_gui", false, 3)
+        this.game.action("main_action", true, 5)
+    }
+
+    loadedAction = () => {
+        this.loaded++
+        if (this.loaded >= this.maxLoad) this.guiInit()
+        console.log(this.loaded)
     }
 
     start = () => {
@@ -453,6 +487,9 @@ class Menu extends Scene {
 
         // Lightings
         this.createLighting()
+
+        // Open Main
+        //this.guiInit()
     }
 
     private setupTexture = (texture: Texture, x: number, y: number, colorSpace: string = SRGBColorSpace) => {

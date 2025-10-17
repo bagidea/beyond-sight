@@ -3,6 +3,15 @@
     width: 100vw;
     height: 100vh;
     box-sizing: border-box;
+    overflow: hidden;
+}
+
+#game-canvas {
+    opacity: 0;
+}
+
+#game-canvas.open {
+    opacity: 1;
 }
 
 /* GUI Overlay */
@@ -55,9 +64,27 @@
     animation: glowPulse 3s ease-in-out infinite;
 }
 
+/* Small glowing line under title */
+.game-gui_menu-title::after {
+    content: "";
+    display: block;
+    margin: 10px auto 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffc6, transparent);
+    border-radius: 2px;
+    animation: scanLine 2s linear infinite;
+}
+
 @keyframes glowPulse {
     0%, 100% { text-shadow: 0 0 12px #00ffc6, 0 0 40px rgba(0, 255, 198, 0.4); }
     50% { text-shadow: 0 0 20px #00ffc6, 0 0 80px rgba(0, 255, 198, 0.8); }
+}
+
+@keyframes scanLine {
+    0% { opacity: 0.2; transform: scaleX(0.5); }
+    50% { opacity: 1; transform: scaleX(1); }
+    100% { opacity: 0.2; transform: scaleX(0.5); }
 }
 
 /* Menu List */
@@ -84,24 +111,6 @@
     transform: scale(1.05);
     border-bottom: 1px solid rgba(0,255,198,0.4);
     text-shadow: 0 0 10px rgba(0,255,198,0.6);
-}
-
-/* Small glowing line under title */
-.game-gui_menu-title::after {
-    content: "";
-    display: block;
-    margin: 10px auto 0;
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #00ffc6, transparent);
-    border-radius: 2px;
-    animation: scanLine 2s linear infinite;
-}
-
-@keyframes scanLine {
-    0% { opacity: 0.2; transform: scaleX(0.5); }
-    50% { opacity: 1; transform: scaleX(1); }
-    100% { opacity: 0.2; transform: scaleX(0.5); }
 }
 
 .game-gui_description {
@@ -147,9 +156,125 @@
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(8px);
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .game-gui_description-top div:hover {
     background: rgba(255, 255, 255, 0.1);
     transform: scale(1.02);
+}
+
+/* ------------ Loading GUI -------------- */
+
+.loading-gui {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    color: white;
+    overflow: hidden;
+    z-index: 20;
+    background: linear-gradient(180deg, #100813 0%, #3a0f6b 100%);
+    opacity: 0;
+    transition: opacity 1s ease-out;
+    pointer-events: none;
+    user-select: none;
+}
+
+.loading-gui.open {
+    opacity: 1;
+}
+
+.loading-gui_bg {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, #100813 0%, #2b1833 100%);
+    animation: backgroundPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes backgroundPulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+@keyframes backgroundPulseAlt {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
+
+.loading-gui_frame {
+    display: flex;
+    width: 300px;
+    height: 150px;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-gui_logo {
+    font-size: 3rem;
+    letter-spacing: 4px;
+    font-weight: 600;
+    text-align: center;
+    color: #00ffc6;
+    text-shadow: 0 0 12px #00ffc6, 0 0 40px rgba(0, 255, 198, 0.4);
+    margin-bottom: 40px;
+    animation: glowPulseLoading 3s ease-in-out infinite;
+}
+
+.loading-gui_logo::after {
+    content: "";
+    display: block;
+    margin: 10px auto 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffc6, transparent);
+    border-radius: 2px;
+    animation: scanLineLoading 2s linear infinite;
+}
+
+@keyframes glowPulseLoading {
+    0%, 100% { text-shadow: 0 0 12px #00ffc6, 0 0 40px rgba(0, 255, 198, 0.4); }
+    50% { text-shadow: 0 0 20px #00ffc6, 0 0 80px rgba(0, 255, 198, 0.8); }
+}
+
+@keyframes scanLineLoading {
+    0% { opacity: 0.2; transform: scaleX(0.5); }
+    50% { opacity: 1; transform: scaleX(1); }
+    100% { opacity: 0.2; transform: scaleX(0.5); }
+}
+
+/* Loading Bar Container */
+.loading-bar {
+    position: relative;
+    width: 250px;
+    height: 8px;
+    margin-top: 30px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,255,198,0.3);
+}
+
+/* Animated Fill */
+.loading-bar-fill {
+    position: absolute;
+    top: 0;
+    left: -50%; /* เริ่มจากด้านนอก */
+    width: 50%; /* ความกว้างของแถบวิ่ง */
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #00ffc6, #ff00ff, transparent);
+    animation: loadingAnim 1.5s linear infinite;
+    border-radius: 4px;
+}
+
+/* Animation: วิ่งซ้าย → ขวา */
+@keyframes loadingAnim {
+    0% { left: -50%; }
+    100% { left: 100%; }
 }

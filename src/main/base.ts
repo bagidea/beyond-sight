@@ -1,8 +1,30 @@
 window.onload = () => {
     const container: HTMLDivElement = document.getElementById("container") as HTMLDivElement
+
     const canvas: HTMLCanvasElement = document.getElementById("game-canvas") as HTMLCanvasElement
+    canvas.classList.remove("open")
 
     const offscreen: OffscreenCanvas = canvas.transferControlToOffscreen()
+
+    ///////////// Game GUI ///////////////
+
+    const loading_gui: HTMLDivElement = document.getElementById("loading_gui") as HTMLDivElement
+    loading_gui.classList.add("open")
+
+    const main_menu: HTMLDivElement = document.getElementById("main_menu") as HTMLDivElement
+    const main_description: HTMLDivElement = document.getElementById("main_description") as HTMLDivElement
+
+    const main_action = (action: boolean) => {
+        if (action) {
+            main_menu.classList.add("open")
+            main_description.classList.add("open")
+        } else {
+            main_menu.classList.remove("open")
+            main_description.classList.remove("open")
+        }
+    }
+
+    /////////////////////////////////////
 
     const worker: Worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" })
 
@@ -74,30 +96,22 @@ window.onload = () => {
         }
     })*/
 
-    ///////////// Game GUI ///////////////
-
-    const main_menu: HTMLDivElement = document.getElementById("main_menu") as HTMLDivElement
-    const main_description: HTMLDivElement = document.getElementById("main_description") as HTMLDivElement
-
-    const main_action = (action: boolean) => {
-        if (action) {
-            main_menu.classList.add("open")
-            main_description.classList.add("open")
-        } else {
-            main_menu.classList.remove("open")
-            main_description.classList.remove("open")
-        }
-    }
-
-    /////////////////////////////////////
-
     worker.onmessage = (e: MessageEvent) => {
         switch (e.data.type) {
+            case "game_canvas":
+                canvas.classList.add("open")
+
+                break
+            case "loading_gui":
+                loading_gui.classList.remove("open")
+
+                break
             case "main_action":
                 main_action(e.data.action)
 
                 break
             case "game_action":
+                break
             default:
                 console.log("Invalid type! [ return ]")
         }

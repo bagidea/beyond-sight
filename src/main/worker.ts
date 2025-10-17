@@ -15,8 +15,8 @@ self.onmessage = (e: MessageEvent) => {
         case "init":
             if (e.data.canvas) {
                 game = new Main()
-                game.init(e.data.canvas, e.data.width, e.data.height, e.data.pixelRatio)
-                game.action(self, true, 1)
+                game.init(self, e.data.canvas, e.data.width, e.data.height, e.data.pixelRatio)
+                game.action("game_canvas", true, 1)
             }
 
             break

@@ -5,6 +5,21 @@ const App = () => {
     <div id="container">
       <canvas id="game-canvas" />
 
+      <div
+        id="loading_gui"
+        className="loading-gui"
+      >
+        <div className="loading-gui_bg">
+          <div className="loading-gui_frame">
+            <div className="loading-gui_logo">BEYOND SIGHT</div>
+          </div>
+
+          <div className="loading-bar">
+            <div className="loading-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
       <div className="game-gui">
         <div
           id="main_menu"
