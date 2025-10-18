@@ -468,7 +468,12 @@ class Menu extends Scene {
         if (this.loaded >= this.maxLoad) this.guiInit()
     }
 
-    private setupTexture = (texture: Texture, x: number, y: number, colorSpace: string = SRGBColorSpace) => {
+    private setupTexture = (
+        texture: Texture,
+        x: number,
+        y: number,
+        colorSpace: string = SRGBColorSpace
+    ) => {
         texture.wrapS = RepeatWrapping
         texture.wrapT = RepeatWrapping
         texture.repeat.set(x, y)
