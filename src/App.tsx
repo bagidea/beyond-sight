@@ -36,10 +36,10 @@ const App = () => {
           <div className="game-gui_menu-title">BEYOND SIGHT</div>
 
           <div className="game-gui_menu-list">
-            <div>START GAME</div>
-            <div>TUTORIAL</div>
-            <div>SETTINGS</div>
-            <div>CREDIT</div>
+            <div id="game-start-btn">START GAME</div>
+            <div id="game-tutorial-btn">TUTORIAL</div>
+            <div id="game-settings-btn">SETTINGS</div>
+            <div id="game-credit-btn">CREDIT</div>
           </div>
 
           <img src="LOGO_mini.png" />

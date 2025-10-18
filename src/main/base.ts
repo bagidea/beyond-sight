@@ -16,8 +16,27 @@ window.onload = () => {
     const loading_play: HTMLDivElement = document.getElementById("loading-play-btn") as HTMLDivElement
 
     const main_menu: HTMLDivElement = document.getElementById("main_menu") as HTMLDivElement
+
+    // Game Menu buttons
+    const gameStartBtn: HTMLDivElement = document.getElementById("game-start-btn") as HTMLDivElement
+
     const main_description: HTMLDivElement = document.getElementById("main_description") as HTMLDivElement
 
+    // Play button
+    loading_play.addEventListener("click", () => {
+        loading_logo.classList.add("hidden")
+        loading_play.classList.remove("show")
+        loading_gui.classList.remove("open")
+
+        setTimeout(() => {
+            main_action(true)
+        }, 1000)
+    })
+
+    gameStartBtn.addEventListener("click", () => {
+    })
+
+    // Main gui [ open, close ]
     const main_action = (action: boolean) => {
         if (action) {
             main_menu.classList.add("open")
@@ -51,7 +70,7 @@ window.onload = () => {
     // Pointer Events
 
     canvas.addEventListener("contextmenu", (e: PointerEvent) => e.preventDefault())
-    /*canvas.addEventListener("pointerup", () => worker.postMessage({ type: "pointerup" }))
+    canvas.addEventListener("pointerup", () => worker.postMessage({ type: "pointerup" }))
 
     canvas.addEventListener("pointerdown", (e: PointerEvent) => {
         worker.postMessage({
@@ -59,7 +78,7 @@ window.onload = () => {
             x: e.clientX,
             y: e.clientY
         })
-    })*/
+    })
 
     canvas.addEventListener("pointermove", (e: PointerEvent) => {
         worker.postMessage({
@@ -74,7 +93,7 @@ window.onload = () => {
 
     // Keyboard Events
 
-    /*const keys: Record<string, boolean> = {}
+    const keys: Record<string, boolean> = {}
 
     window.addEventListener("keydown", (e: KeyboardEvent) => {
         if (!keys[e.code]) {
@@ -98,16 +117,6 @@ window.onload = () => {
                 pressed: false
             })
         }
-    })*/
-
-    loading_play.addEventListener("click", () => {
-        loading_logo.classList.add("hidden")
-        loading_play.classList.remove("show")
-        loading_gui.classList.remove("open")
-
-        setTimeout(() => {
-            main_action(true)
-        }, 1000)
     })
 
     worker.onmessage = (e: MessageEvent) => {
