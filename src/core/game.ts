@@ -9,7 +9,12 @@ import {
     PostProcessing,
     PassNode,
     TextureNode,
-    ACESFilmicToneMapping
+    ACESFilmicToneMapping,
+    Object3D,
+    Mesh,
+    Light,
+    //PCFShadowMap,
+    InstancedMesh
 } from "three/webgpu"
 
 import {
@@ -73,6 +78,8 @@ class Game {
         this.renderer.setSize(width, height, false)
         this.renderer.setPixelRatio(pixelRatio)
         this.renderer.toneMapping = ACESFilmicToneMapping
+        //this.renderer.shadowMap.enabled = true
+        //this.renderer.shadowMap.type = PCFShadowMap
 
         this.camera = new PerspectiveCamera(60, width / height, 0.1, 1000)
         this.camera.aspect = width / height
@@ -213,8 +220,33 @@ class Game {
     clearScene = () => {
         if (this.scene) {
             //console.log(this.scene.children)
-        
-            this.scene.remove(...this.scene.children)
+
+            this.scene.traverse((object: Object3D) => {
+                if (object instanceof Mesh || object instanceof InstancedMesh) {
+                    if (object.geometry) object.geometry.dispose()
+
+                    if (object.material) {
+                        const materials = Array.isArray((object).material) ? object.material : [ object.material ]
+                        
+                        for (const material of materials) {
+                            for (const key in material) {
+                                const value = material[key]
+                                if (value && value.isTexture) value.dispose()
+                            }
+
+                            material.dispose()
+                        }
+                    }
+                }
+
+                if (object instanceof Light) {
+                    if (object.shadow?.map) object.shadow?.map.dispose()
+                }
+            })
+
+            while (this.scene.children.length > 0) {
+                this.scene.remove(this.scene.children[0])
+            }
         }
     }
 }

@@ -6,8 +6,11 @@ import {
     PerspectiveCamera,
     WebGPURenderer,
     Vector3,
-    Euler
+    Euler,
+    RectAreaLightNode
 } from "three/webgpu"
+
+import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLightTexturesLib.js"
 
 class Scene {
     protected game: Game = null!
@@ -31,6 +34,8 @@ class Scene {
 
         if (!this.game.camera) this.game.camera = new PerspectiveCamera(60, this.game.width / this.game.height, 0.1, 1000)
         this.camera = this.game.camera
+
+        RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
 
         this.game.initPostProcessing()
 

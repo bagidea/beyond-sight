@@ -15,10 +15,11 @@ import {
     //AmbientLight,
     //DirectionalLight,
     DoubleSide,
-    RectAreaLightNode,
     RectAreaLight,
     Color,
-    Mesh
+    Mesh,
+    //Vector2,
+    PointLight
 } from "three/webgpu"
 
 import {
@@ -30,7 +31,6 @@ import {
 } from "three/tsl"
 
 import type { ShaderNodeObject } from "three/tsl"
-import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLightTexturesLib.js"
 
 class Level1 extends Scene {
     // 5 x 5
@@ -66,6 +66,8 @@ class Level1 extends Scene {
         groundMaterial.metalnessNode = float(0.9)
 
         const grounds: InstancedMesh = new InstancedMesh(groundGeometry, groundMaterial, 25)
+        grounds.frustumCulled = false
+        //grounds.receiveShadow = true
         this.scene.add(grounds)
 
         const wallGeometry: PlaneGeometry = new PlaneGeometry(10, 5)
@@ -87,6 +89,9 @@ class Level1 extends Scene {
         wallMaterial.metalnessNode = float(0.2)
 
         const walls: InstancedMesh = new InstancedMesh(wallGeometry, wallMaterial, 100)
+        //walls.receiveShadow = true
+        //walls.castShadow = true
+        walls.frustumCulled = false
         this.scene.add(walls)
 
         for (let z: number = 0; z < this.maps.length; z++) {
@@ -161,12 +166,21 @@ class Level1 extends Scene {
         }
     }
 
-    createTopLight = (x: number, z: number) => {
+    /*createTopLight = (x: number, z: number) => {
         const areaLight: RectAreaLight = new RectAreaLight(new Color(0xffffff), 1, 5, 5)
         areaLight.position.set(x * 10, 5, z * 10)
         areaLight.rotation.x = MathUtils.degToRad(-90)
 
         this.scene.add(areaLight)
+    }*/
+
+    createTopLight = (x: number, z: number) => {
+        const pointLight: PointLight = new PointLight(0xffffff, 20)
+        //pointLight.castShadow = true
+        //pointLight.shadow.mapSize = new Vector2(32, 32)
+        //pointLight.shadow.bias = -0.005
+        pointLight.position.set(x * 10, 5, z * 10)
+        this.scene.add(pointLight)
     }
 
     createColorLight = (
@@ -211,17 +225,15 @@ class Level1 extends Scene {
     }
 
     createLighting = () => {
-        RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
-
         this.createTopLight(1, 0)
         this.createTopLight(2, 2)
         this.createTopLight(0, 4)
 
         this.createColorLight(2, 0, { r: 1, g: 0, b: 0 }, "right")
         this.createColorLight(0, 2, { r: 1, g: 0, b: 0 }, "front")
-        this.createColorLight(2, 2, { r: 1, g: 0, b: 0 }, "front")
+        //this.createColorLight(2, 2, { r: 1, g: 0, b: 0 }, "front")
 
-        this.createColorLight(1, 1, { r: 0, g: 0.35, b: 1 }, "left")
+        //this.createColorLight(1, 1, { r: 0, g: 0.35, b: 1 }, "left")
         this.createColorLight(2, 3, { r: 0, g: 0.35, b: 1 }, "back")
         this.createColorLight(4, 2, { r: 0, g: 0.35, b: 1 }, "right")
     }
@@ -243,8 +255,9 @@ class Level1 extends Scene {
         // Create Map
         this.createMap()
 
-        this.camera.position.set(5, 10, 4 * 10 + 5)
-        this.cameraLookAt(0, 0, 4 * 10)
+        this.camera.position.set(0, 20, 4 * 10 + 5)
+        //this.cameraLookAt(0, 0, 4 * 10)
+        this.cameraLookAt(2.5 * 10, 0, 2.5 * 10)
 
         // Lightings
         this.createLighting()

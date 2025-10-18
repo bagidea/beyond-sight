@@ -10,7 +10,6 @@ import {
     Object3D,
     PlaneGeometry,
     RectAreaLight,
-    RectAreaLightNode,
     RepeatWrapping,
     SRGBColorSpace,
     Texture,
@@ -45,7 +44,6 @@ import type {
     ShaderNodeObject
 } from "three/tsl"
 
-import { RectAreaLightTexturesLib } from "three/examples/jsm/lights/RectAreaLightTexturesLib.js"
 import type { GLTF } from "three/examples/jsm/Addons.js"
 
 class Menu extends Scene {
@@ -433,8 +431,6 @@ class Menu extends Scene {
     }
 
     createLighting = () => {
-        RectAreaLightNode.setLTC(RectAreaLightTexturesLib.init())
-
         const frontAreaLight: RectAreaLight = new RectAreaLight(0xffffff, 0.5, 5, 5)
         frontAreaLight.position.set(0, 10, 5)
         frontAreaLight.lookAt(0, 1, 0)
