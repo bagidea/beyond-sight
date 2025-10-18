@@ -19,7 +19,12 @@ import {
     Color,
     Mesh,
     //Vector2,
-    PointLight
+    PointLight,
+    Group,
+} from "three/webgpu"
+
+import type {
+    Object3DEventMap
 } from "three/webgpu"
 
 import {
@@ -31,6 +36,7 @@ import {
 } from "three/tsl"
 
 import type { ShaderNodeObject } from "three/tsl"
+import type { GLTF } from "three/examples/jsm/Addons.js"
 
 class Level1 extends Scene {
     // 5 x 5
@@ -166,6 +172,22 @@ class Level1 extends Scene {
         }
     }
 
+    createModels = () => {
+        Plugin.gltfLoader.load("models/props.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.z = 4 * 10
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    object.material.roughness = 0.3
+                }
+            })
+
+            this.scene.add(model)
+        })
+
+    }
+
     /*createTopLight = (x: number, z: number) => {
         const areaLight: RectAreaLight = new RectAreaLight(new Color(0xffffff), 1, 5, 5)
         areaLight.position.set(x * 10, 5, z * 10)
@@ -254,6 +276,9 @@ class Level1 extends Scene {
     start = () => {
         // Create Map
         this.createMap()
+
+        // Create Models
+        this.createModels()
 
         this.camera.position.set(0, 20, 4 * 10 + 5)
         //this.cameraLookAt(0, 0, 4 * 10)
