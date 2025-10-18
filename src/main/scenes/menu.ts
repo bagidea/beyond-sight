@@ -467,7 +467,6 @@ class Menu extends Scene {
     loadedAction = () => {
         this.loaded++
         if (this.loaded >= this.maxLoad) this.guiInit()
-        console.log(this.loaded)
     }
 
     start = () => {

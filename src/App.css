@@ -208,6 +208,27 @@
     100% { opacity: 0.5; }
 }
 
+#loading-play-btn {
+    display: none;
+    font-size: 1.5rem;
+    letter-spacing: 4px;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease-in-out;
+}
+
+#loading-play-btn.show {
+    display: flex;
+}
+
+#loading-play-btn:hover {
+    color: black;
+    background-color: white;
+}
+
 .loading-gui_frame {
     display: flex;
     width: 300px;
@@ -251,14 +272,23 @@
 
 /* Loading Bar Container */
 .loading-bar {
+    display: flex;
     position: relative;
     width: 250px;
-    height: 8px;
+    height: 14px;
     margin-top: 30px;
     background: rgba(255,255,255,0.1);
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 0 0 10px rgba(0,255,198,0.3);
+}
+
+.loading-bar.hidden, .loader-gui_logo.hidden {
+    display: none;
+}
+
+#loading_logo.hidden {
+    display: none;
 }
 
 /* Animated Fill */

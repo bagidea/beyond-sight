@@ -11,6 +11,10 @@ window.onload = () => {
     const loading_gui: HTMLDivElement = document.getElementById("loading_gui") as HTMLDivElement
     loading_gui.classList.add("open")
 
+    const loading_logo: HTMLDivElement = document.getElementById("loading_logo") as HTMLDivElement
+    const loading_bar: HTMLDivElement = document.getElementById("loading_bar") as HTMLDivElement
+    const loading_play: HTMLDivElement = document.getElementById("loading-play-btn") as HTMLDivElement
+
     const main_menu: HTMLDivElement = document.getElementById("main_menu") as HTMLDivElement
     const main_description: HTMLDivElement = document.getElementById("main_description") as HTMLDivElement
 
@@ -96,6 +100,12 @@ window.onload = () => {
         }
     })*/
 
+    loading_play.addEventListener("click", () => {
+        loading_logo.classList.add("hidden")
+        loading_play.classList.remove("show")
+        loading_gui.classList.remove("open")
+    })
+
     worker.onmessage = (e: MessageEvent) => {
         switch (e.data.type) {
             case "game_canvas":
@@ -103,9 +113,11 @@ window.onload = () => {
 
                 break
             case "loading_gui":
-                loading_gui.classList.remove("open")
+                loading_bar.classList.add("hidden")
+                loading_play.classList.add("show")
 
                 break
+            case "loading_gui_ready":
             case "main_action":
                 main_action(e.data.action)
 

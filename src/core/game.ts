@@ -145,7 +145,7 @@ class Game {
     action = (action: string, open: boolean, delay: number = 0) => {
         setTimeout(() => {
             this.self.postMessage({ type: action, action: open })
-        }, delay * 1000);
+        }, delay * 1000)
     }
 
     cameraRotationUpdate = (rotationX: number, rotationY: number) => {

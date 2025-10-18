@@ -11,12 +11,20 @@ const App = () => {
       >
         <div className="loading-gui_bg">
           <div className="loading-gui_frame">
-            <div className="loading-gui_logo">BEYOND SIGHT</div>
+            <div
+              id="loading_logo"
+              className="loading-gui_logo">BEYOND SIGHT
+            </div>
           </div>
 
-          <div className="loading-bar">
+          <div
+            id="loading_bar"
+            className="loading-bar"
+          >
             <div className="loading-bar-fill"></div>
           </div>
+
+          <div id="loading-play-btn">PLAY</div>
         </div>
       </div>
 
