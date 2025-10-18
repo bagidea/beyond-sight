@@ -295,15 +295,14 @@
 .loading-bar-fill {
     position: absolute;
     top: 0;
-    left: -50%; /* เริ่มจากด้านนอก */
-    width: 50%; /* ความกว้างของแถบวิ่ง */
+    left: -50%;
+    width: 50%;
     height: 100%;
     background: linear-gradient(90deg, transparent, #00ffc6, #ff00ff, transparent);
     animation: loadingAnim 1.5s linear infinite;
     border-radius: 4px;
 }
 
-/* Animation: วิ่งซ้าย → ขวา */
 @keyframes loadingAnim {
     0% { left: -50%; }
     100% { left: 100%; }
