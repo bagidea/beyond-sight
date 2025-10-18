@@ -22,6 +22,17 @@ window.onload = () => {
 
     const main_description: HTMLDivElement = document.getElementById("main_description") as HTMLDivElement
 
+    // Main gui [ open, close ]
+    const main_action = (action: boolean) => {
+        if (action) {
+            main_menu.classList.add("open")
+            main_description.classList.add("open")
+        } else {
+            main_menu.classList.remove("open")
+            main_description.classList.remove("open")
+        }
+    }
+
     // Play button
     loading_play.addEventListener("click", () => {
         loading_logo.classList.add("hidden")
@@ -34,18 +45,18 @@ window.onload = () => {
     })
 
     gameStartBtn.addEventListener("click", () => {
-    })
+        main_action(false)
 
-    // Main gui [ open, close ]
-    const main_action = (action: boolean) => {
-        if (action) {
-            main_menu.classList.add("open")
-            main_description.classList.add("open")
-        } else {
-            main_menu.classList.remove("open")
-            main_description.classList.remove("open")
-        }
-    }
+        setTimeout(() => {
+            loading_logo.classList.remove("hidden")
+            loading_bar.classList.remove("hidden")
+            loading_gui.classList.add("open")
+        }, 1000)
+
+        setTimeout(() => {
+            worker.postMessage({ type: "clearscene" })
+        }, 2000)
+    })
 
     /////////////////////////////////////
 
@@ -119,6 +130,8 @@ window.onload = () => {
         }
     })
 
+    // Worker on message //
+
     worker.onmessage = (e: MessageEvent) => {
         switch (e.data.type) {
             case "game_canvas":
@@ -128,6 +141,11 @@ window.onload = () => {
             case "loading_gui":
                 loading_bar.classList.add("hidden")
                 loading_play.classList.add("show")
+
+                break
+
+            case "loading_gui_none":
+                loading_gui.classList.remove("open")
 
                 break
             case "main_action":
@@ -140,4 +158,6 @@ window.onload = () => {
                 console.log("Invalid type! [ return ]")
         }
     }
+
+    ///////////////////////
 }

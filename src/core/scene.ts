@@ -22,11 +22,14 @@ class Scene {
     }
 
     init = () => {
-        this.game.scene = new _Scene()
-        this.game.scene.background = new Color(0x000000)
+        if (!this.game.scene) {
+            this.game.scene = new _Scene()
+            this.game.scene.background = new Color(0x000000)
+        }
+
         this.scene = this.game.scene
 
-        this.game.camera = new PerspectiveCamera(60, this.game.width / this.game.height, 0.1, 1000)
+        if (!this.game.camera) this.game.camera = new PerspectiveCamera(60, this.game.width / this.game.height, 0.1, 1000)
         this.camera = this.game.camera
 
         this.game.initPostProcessing()

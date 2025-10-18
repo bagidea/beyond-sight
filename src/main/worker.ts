@@ -59,6 +59,11 @@ self.onmessage = (e: MessageEvent) => {
             )
 
             break
+        case "clearscene":
+            game.clearScene()
+            game.loadGameScene("level_1")
+
+            break
         default:
             console.log("Invalid type!")
     }

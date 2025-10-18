@@ -19,9 +19,7 @@ import {
     pass,
 } from "three/tsl"
 
-import type {
-    ShaderNodeObject
-} from "three/tsl"
+import type { ShaderNodeObject } from "three/tsl"
 import { bloom } from "three/examples/jsm/tsl/display/BloomNode.js"
 
 class Game {
@@ -207,6 +205,14 @@ class Game {
         this.back = back
         this.left = left
         this.right = right
+    }
+
+    clearScene = () => {
+        if (this.scene) {
+            //console.log(this.scene.children)
+        
+            this.scene.remove(...this.scene.children)
+        }
     }
 }
 
