@@ -50,6 +50,7 @@ class Game {
     private back: boolean = false
     private left: boolean = false
     private right: boolean = false
+    private moveSpeed: boolean = false
 
     constructor() {
         if (Game.instanced) return Game.instanced
@@ -181,7 +182,7 @@ class Game {
     cameraMove = (_delta: number) => {
         if (!this.camera) return
 
-        const moveSpeed: number = 5 * _delta
+        const speed: number = (5 * _delta) * (this.moveSpeed ? 5 : 1)
 
         const forward: Vector3 = new Vector3()
         this.camera.getWorldDirection(forward)
@@ -189,22 +190,24 @@ class Game {
         const right: Vector3 = new Vector3()
         right.crossVectors(forward, this.camera.up).normalize()
 
-        if (this.forward) this.camera.position.add(forward.clone().multiplyScalar(moveSpeed))
-        if (this.back) this.camera.position.add(forward.clone().multiplyScalar(-moveSpeed))
-        if (this.left) this.camera.position.add(right.clone().multiplyScalar(-moveSpeed))
-        if (this.right) this.camera.position.add(right.clone().multiplyScalar(moveSpeed))
+        if (this.forward) this.camera.position.add(forward.clone().multiplyScalar(speed))
+        if (this.back) this.camera.position.add(forward.clone().multiplyScalar(-speed))
+        if (this.left) this.camera.position.add(right.clone().multiplyScalar(-speed))
+        if (this.right) this.camera.position.add(right.clone().multiplyScalar(speed))
     }
 
     cameraKeys = (
         forward: boolean,
         back: boolean,
         left: boolean,
-        right: boolean
+        right: boolean,
+        moveSpeed: boolean
     ) => {
         this.forward = forward
         this.back = back
         this.left = left
-        this.right = right
+        this.right = right,
+        this.moveSpeed = moveSpeed
     }
 
     clearScene = () => {

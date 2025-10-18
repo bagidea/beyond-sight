@@ -55,7 +55,8 @@ self.onmessage = (e: MessageEvent) => {
                 keysState["KeyW"],
                 keysState["KeyS"],
                 keysState["KeyA"],
-                keysState["KeyD"]
+                keysState["KeyD"],
+                keysState["ShiftLeft"]
             )
 
             break
