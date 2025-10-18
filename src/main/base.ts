@@ -104,6 +104,10 @@ window.onload = () => {
         loading_logo.classList.add("hidden")
         loading_play.classList.remove("show")
         loading_gui.classList.remove("open")
+
+        setTimeout(() => {
+            main_action(true)
+        }, 1000)
     })
 
     worker.onmessage = (e: MessageEvent) => {
@@ -117,7 +121,6 @@ window.onload = () => {
                 loading_play.classList.add("show")
 
                 break
-            case "loading_gui_ready":
             case "main_action":
                 main_action(e.data.action)
 

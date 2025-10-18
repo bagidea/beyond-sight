@@ -460,8 +460,7 @@ class Menu extends Scene {
     }
 
     guiInit = () => {
-        this.game.action("loading_gui", false, 3)
-        this.game.action("main_action", true, 5)
+        this.game.action("loading_gui", true, 3)
     }
 
     loadedAction = () => {
@@ -486,9 +485,6 @@ class Menu extends Scene {
 
         // Lightings
         this.createLighting()
-
-        // Open Main
-        //this.guiInit()
     }
 
     private setupTexture = (texture: Texture, x: number, y: number, colorSpace: string = SRGBColorSpace) => {
