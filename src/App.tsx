@@ -9,23 +9,23 @@ const App = () => {
         id="loading_gui"
         className="loading-gui"
       >
-        <div className="loading-gui_bg">
-          <div className="loading-gui_frame">
-            <div
-              id="loading_logo"
-              className="loading-gui_logo">BEYOND SIGHT
-            </div>
-          </div>
+        <div className="loading-gui_bg"></div>
 
+        <div className="loading-gui_frame">
           <div
-            id="loading_bar"
-            className="loading-bar"
-          >
-            <div className="loading-bar-fill"></div>
+            id="loading_logo"
+            className="loading-gui_logo">BEYOND SIGHT
           </div>
-
-          <div id="loading-play-btn">PLAY</div>
         </div>
+
+        <div
+          id="loading_bar"
+          className="loading-bar"
+        >
+          <div className="loading-bar-fill"></div>
+        </div>
+
+        <div id="loading-play-btn">PLAY</div>
       </div>
 
       <div className="game-gui">

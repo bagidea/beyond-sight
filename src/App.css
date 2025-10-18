@@ -174,6 +174,9 @@
     overflow: hidden;
     z-index: 20;
     background: linear-gradient(180deg, #100813 0%, #3a0f6b 100%);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     opacity: 0;
     transition: opacity 1s ease-out;
     pointer-events: none;
@@ -185,15 +188,13 @@
 }
 
 .loading-gui_bg {
-    position: relative;
+    position: absolute;
     display: flex;
     width: 100%;
     height: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     background: linear-gradient(180deg, #100813 0%, #2b1833 100%);
     animation: backgroundPulse 2s ease-in-out infinite alternate;
+    z-index: -1;
 }
 
 @keyframes backgroundPulse {
