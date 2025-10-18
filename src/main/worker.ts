@@ -61,6 +61,7 @@ self.onmessage = (e: MessageEvent) => {
             break
         case "clearscene":
             game.clearScene()
+            game.gameScene = null
             game.loadGameScene("level_1")
 
             break

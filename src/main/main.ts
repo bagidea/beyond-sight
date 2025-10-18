@@ -9,7 +9,8 @@ class Main extends Game {
     gameScene: Scene | null = null
 
     create = () => {
-        this.gameScene = new Menu()
+        //this.gameScene = new Menu()
+        this.gameScene = new Level1()
     }
 
     loadGameScene = (name: string) => {

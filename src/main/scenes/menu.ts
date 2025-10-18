@@ -468,6 +468,14 @@ class Menu extends Scene {
         if (this.loaded >= this.maxLoad) this.guiInit()
     }
 
+    private setupTexture = (texture: Texture, x: number, y: number, colorSpace: string = SRGBColorSpace) => {
+        texture.wrapS = RepeatWrapping
+        texture.wrapT = RepeatWrapping
+        texture.repeat.set(x, y)
+        texture.colorSpace = colorSpace
+        texture.needsUpdate = true
+    }
+
     start = () => {
         // Ground and Top
         this.createGroundAndTop()
@@ -485,14 +493,6 @@ class Menu extends Scene {
 
         // Lightings
         this.createLighting()
-    }
-
-    private setupTexture = (texture: Texture, x: number, y: number, colorSpace: string = SRGBColorSpace) => {
-        texture.wrapS = RepeatWrapping
-        texture.wrapT = RepeatWrapping
-        texture.repeat.set(x, y)
-        texture.colorSpace = colorSpace
-        texture.needsUpdate = true
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
