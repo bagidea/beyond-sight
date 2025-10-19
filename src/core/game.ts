@@ -31,6 +31,7 @@ class Game {
     static instanced: Game
     private self: Window & typeof globalThis = null!
     private renderer: WebGPURenderer = null!
+    private fps: number = 0
 
     postProcessing: PostProcessing = null!
     scenePass: ShaderNodeObject<PassNode> | null = null
@@ -135,6 +136,10 @@ class Game {
     private update = async(_time: DOMHighResTimeStamp) => {
         const _delta: number = (_time - this.lastTime) / 1000
         this.lastTime = _time
+
+        const currentFps: number = 1 / _delta
+        this.fps = this.fps * 0.9 + currentFps * 0.1
+        this.self.postMessage({ type: "fps", fps: this.fps })
 
         this.cameraMove(_delta)
 

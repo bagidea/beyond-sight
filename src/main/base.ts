@@ -134,6 +134,10 @@ window.onload = () => {
 
     worker.onmessage = (e: MessageEvent) => {
         switch (e.data.type) {
+            case "fps":
+                //console.log(e.data.fps)
+
+                break
             case "game_canvas":
                 canvas.classList.add("open")
 
