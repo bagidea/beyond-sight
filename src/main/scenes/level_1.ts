@@ -12,15 +12,12 @@ import {
     RepeatWrapping,
     SRGBColorSpace,
     ReflectorNode,
-    //AmbientLight,
-    //DirectionalLight,
     DoubleSide,
     RectAreaLight,
     Color,
     Mesh,
-    //Vector2,
     PointLight,
-    Group,
+    Group
 } from "three/webgpu"
 
 import type {
@@ -31,8 +28,15 @@ import {
     bumpMap,
     color,
     float,
+    Fn,
+    fract,
     reflector,
-    texture
+    sin,
+    texture,
+    time,
+    uv,
+    vec3,
+    vec4
 } from "three/tsl"
 
 import type { ShaderNodeObject } from "three/tsl"
@@ -173,6 +177,7 @@ class Level1 extends Scene {
     }
 
     createModels = () => {
+        // Props
         Plugin.gltfLoader.load("models/props.glb", (data: GLTF) => {
             const model: Group<Object3DEventMap> = data.scene
             model.position.z = 4 * 10
@@ -186,6 +191,78 @@ class Level1 extends Scene {
             this.scene.add(model)
         })
 
+        // TV
+        Plugin.gltfLoader.load("models/tv.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.scale.set(4, 4, 4)
+            model.position.set(13.8, 0, 15)
+            model.rotation.y = MathUtils.degToRad(-45)
+
+            // @ts-ignore
+            const noise21 = Fn(({ p, ta, tb }) => {
+                return fract(sin(p.x.mul(ta).add(p.y.mul(tb))).mul(5678))
+            })
+
+            const frag = Fn(() => {
+                const uvCoord = uv()
+                const t = time.add(123.0)
+                const ta = t.mul(0.654321)
+                const tb = t.mul(ta.mul(0.123456))
+                // @ts-ignore
+                const c = noise21({ p: uvCoord, ta, tb })
+                const col = vec3(c)
+
+                return vec4(col, 1.0)
+            })
+
+            const screenMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            //screenMaterial.colorNode = color(0.27, 0.31, 0.45).mul(2)
+            screenMaterial.colorNode = frag().xyz
+            screenMaterial.emissiveNode = color(0.27, 0.31, 0.45).mul(0.4).sub(frag().xyz.mul(0.2)).mul(2)
+
+            const bodyMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            bodyMaterial.colorNode = color(0.4, 0.4, 0.4)
+            bodyMaterial.roughnessNode = float(0.45)
+
+            const darkMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            darkMaterial.colorNode = color(0.2, 0.2, 0.2)
+            darkMaterial.roughnessNode = float(0.2)
+            darkMaterial.metalnessNode = float(1)
+
+            const lightMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            lightMaterial.colorNode = color(1, 1, 1)
+            lightMaterial.roughnessNode = float(0.2)
+            lightMaterial.metalnessNode = float(1)
+
+            const borderInsideMaterial: MeshStandardNodeMaterial = new MeshStandardNodeMaterial()
+            borderInsideMaterial.colorNode = color(0, 0, 0)
+            borderInsideMaterial.metalnessNode = float(1)
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Screen":
+                            object.material = screenMaterial
+                            break
+                        case "Body":
+                            object.material = bodyMaterial
+                            break
+                        case "Border":
+                        case "LightProp":
+                            object.material = lightMaterial
+                            break
+                        case "DarkProp":
+                            object.material = darkMaterial
+                            break
+                        case "BorderInside":
+                            object.material = borderInsideMaterial
+                            break
+                    }
+                }
+            })
+
+            this.scene.add(model)
+        })
     }
 
     /*createTopLight = (x: number, z: number) => {
@@ -286,13 +363,6 @@ class Level1 extends Scene {
 
         // Lightings
         this.createLighting()
-
-        /*const ambientLight: AmbientLight = new AmbientLight(0xffffff, 0.2)
-        this.scene.add(ambientLight)
-
-        const directionalLight: DirectionalLight = new DirectionalLight(0xffffff)
-        directionalLight.position.set(5, 10, 5)
-        this.scene.add(directionalLight)*/
 
         this.game.action("loading_gui_none", true, 0)
     }
