@@ -50,6 +50,8 @@ self.onmessage = (e: MessageEvent) => {
         case "key":
             keysState[e.data.code] = e.data.pressed
 
+            game.keysState = keysState
+
             game.cameraKeys(
                 keysState["KeyW"],
                 keysState["KeyS"],

@@ -18,7 +18,8 @@ import {
     Color,
     Mesh,
     PointLight,
-    Group
+    Group,
+    BoxGeometry
 } from "three/webgpu"
 
 import type {
@@ -41,9 +42,19 @@ import {
 } from "three/tsl"
 
 import type { ShaderNodeObject } from "three/tsl"
-import type { GLTF } from "three/examples/jsm/Addons.js"
+
+import {
+    RapierPhysics
+} from "three/examples/jsm/Addons.js"
+
+import type {
+    GLTF,
+    RapierPhysicsObject
+} from "three/examples/jsm/Addons.js"
 
 class Level1 extends Scene {
+    private physics: RapierPhysicsObject = null!
+
     // 5 x 5
     private maps: Array<Array<number>> = [
         [ 0, 1, 1, 0, 0 ],
@@ -54,6 +65,51 @@ class Level1 extends Scene {
     ]
 
     private player: Player = null!
+
+    physicsInit = async() => {
+        this.physics = await RapierPhysics()
+        this.physics.addScene(this.scene)
+
+        // Ground Collider
+        const groundCollider: Mesh = new Mesh(
+            new BoxGeometry(50, 0.2, 50),
+            new MeshStandardNodeMaterial()
+        )
+
+        groundCollider.position.x = 20
+        groundCollider.position.z = 20
+
+        //this.scene.add(groundCollider)
+        this.physics.addMesh(groundCollider)
+
+        // Collider
+        Plugin.gltfLoader.load("models/collider.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.z = 40
+
+            const collider: Mesh = model.getObjectByName("Collider") as Mesh
+            
+            if (collider) {
+                const mesh: Mesh = collider.clone()
+                mesh.position.z = 40
+
+                //this.scene.add(mesh)
+                this.physics.addMesh(mesh, 0)
+            }
+
+            //this.scene.add(model)
+        })
+
+        /*const test: Mesh = new Mesh(
+            new BoxGeometry(3, 1, 1),
+            new MeshStandardNodeMaterial()
+        )
+
+        test.position.set(2, 20, 40)
+
+        this.scene.add(test)
+        this.physics.addMesh(test, 1, 0.5)*/
+    }
 
     createMap = async() => {
         const dummy: Object3D = new Object3D()
@@ -191,7 +247,7 @@ class Level1 extends Scene {
         // Props
         Plugin.gltfLoader.load("models/props.glb", (data: GLTF) => {
             const model: Group<Object3DEventMap> = data.scene
-            model.position.z = 4 * 10
+            model.position.z = 40
 
             model.traverse((object: Object3D) => {
                 if (object instanceof Mesh) {
@@ -361,9 +417,12 @@ class Level1 extends Scene {
         texture.needsUpdate = true
     }
 
-    start = () => {
+    start = async() => {
+        // Physics Init
+        await this.physicsInit()
+
         // Create Map
-        this.createMap()
+        await this.createMap()
 
         // Create Models
         this.createModels()
@@ -376,7 +435,7 @@ class Level1 extends Scene {
         this.createLighting()
 
         // Create Player
-        this.player = new Player()
+        this.player = new Player(this.physics)
 
         this.game.action("loading_gui_none", true, 0)
     }

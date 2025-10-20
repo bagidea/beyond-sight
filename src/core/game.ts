@@ -56,6 +56,8 @@ class Game {
     private dx_temp: number = 0
     private dy_temp: number = 0
 
+    keysState: Record<string, boolean> = {}
+
     private forward: boolean = false
     private back: boolean = false
     private left: boolean = false

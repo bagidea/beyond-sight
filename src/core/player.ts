@@ -1,32 +1,33 @@
-import Game from "./game"
 import Plugin from "./plugin"
+import Character from "./character"
 
 import {
     AnimationClip,
     AnimationMixer,
-    Group,
     MathUtils,
     Mesh,
     MeshStandardMaterial,
     Object3D,
     Spherical,
     Vector2,
-    Vector3,
-    type Object3DEventMap
+    Vector3
 } from "three/webgpu"
 
-import type { GLTF } from "three/examples/jsm/Addons.js"
+import type {
+    Object3DEventMap,
+    Group
+} from "three/webgpu"
 
-class Player {
-    protected game: Game = null!
+import type { GLTF, RapierPhysicsObject } from "three/examples/jsm/Addons.js"
 
+class Player extends Character {
     private model: Group<Object3DEventMap> = null!
     private mixer: AnimationMixer = null!
 
     private cameraPosition: Spherical = new Spherical(20, MathUtils.degToRad(30))
 
-    constructor() {
-        this.game = new Game()
+    constructor(physics: RapierPhysicsObject) {
+        super(physics)
 
         Plugin.gltfLoader.load("models/skeleton_warrior.glb", (data: GLTF) => {
             this.model = data.scene
@@ -79,19 +80,44 @@ class Player {
             this.cameraPosition.theta -= drag.x
         }
 
-        if (this.game.camera && this.model) {
+        if (this.game.camera && this.isReady() && this.model) {
+            // Controller ////
+
+            const forward: Vector3 = new Vector3()
+
+            this.game.camera.getWorldDirection(forward)
+            forward.y = 0
+            forward.normalize()
+
+            const right: Vector3 = new Vector3()
+            right.crossVectors(forward, this.game.camera.up).normalize()
+
+            const moveDirection: Vector3 = new Vector3()
+
+            if (this.game.keysState["KeyW"]) moveDirection.add(forward)
+            if (this.game.keysState["KeyS"]) moveDirection.sub(forward)
+            if (this.game.keysState["KeyA"]) moveDirection.sub(right)
+            if (this.game.keysState["KeyD"]) moveDirection.add(right)
+
+            this.updatePhysics(_delta, moveDirection)
+
+            //////////////////
+
+            this.model.position.copy(this.character.position)
+            this.model.position.y -= 1
+
             const camPos: Vector3 = new Vector3().setFromSpherical(this.cameraPosition)
 
-            const posX: number = this.model.position.x + camPos.x
-            const posY: number = this.model.position.y + camPos.y
-            const posZ: number = this.model.position.z + camPos.z
+            const posX: number = this.character.position.x + camPos.x
+            const posY: number = this.character.position.y + camPos.y
+            const posZ: number = this.character.position.z + camPos.z
 
             //this.game.camera.position.set(this.model.position.x + camPos.x, this.model.position.y + camPos.y, this.model.position.z + camPos.z)
             this.game.camera.position.x += (posX - this.game.camera.position.x) / 20
             this.game.camera.position.y += (posY - this.game.camera.position.y) / 20
             this.game.camera.position.z += (posZ - this.game.camera.position.z) / 20
 
-            this.game.camera.lookAt(this.model.position)
+            this.game.camera.lookAt(this.character.position)
         }
     }
 }
