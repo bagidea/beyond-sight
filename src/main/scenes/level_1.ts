@@ -58,6 +58,9 @@ import type {
 } from "three/examples/jsm/Addons.js"
 
 class Level1 extends Scene {
+    private loaded: number = 0
+    private maxLoad: number = 10
+
     private physics: RapierPhysicsObject = null!
 
     // 5 x 5
@@ -107,6 +110,8 @@ class Level1 extends Scene {
             }
 
             //this.scene.add(model)
+
+            this.loadedAction()
         })
 
         /*const test: Mesh = new Mesh(
@@ -250,6 +255,8 @@ class Level1 extends Scene {
                 //grounds.setMatrixAt(z * 5 + x, dummy.matrix) // default calculate
             }
         }
+
+        this.loadedAction()
     }
 
     createModels = () => {
@@ -265,6 +272,8 @@ class Level1 extends Scene {
             })
 
             this.scene.add(model)
+
+            this.loadedAction()
         })
 
         // TV
@@ -352,6 +361,8 @@ class Level1 extends Scene {
 
             //this.scene.add(collider)
             this.physics.addMesh(collider, 0)
+
+            this.loadedAction()
         })
 
         // Characters mockup
@@ -413,7 +424,7 @@ class Level1 extends Scene {
                 this.scene.add(model)
             }
 
-            //this.loadedAction()
+            this.loadedAction()
         })
 
         // Skeleton Minion
@@ -463,7 +474,7 @@ class Level1 extends Scene {
                 this.scene.add(model)
             }
 
-            //this.loadedAction()
+            this.loadedAction()
         })
 
         // Skeleton Rogue
@@ -514,7 +525,7 @@ class Level1 extends Scene {
             }
 
 
-            //this.loadedAction()
+            this.loadedAction()
         })
 
         // Skeleton Mage
@@ -569,7 +580,7 @@ class Level1 extends Scene {
                 this.scene.add(model)
             }
 
-            //this.loadedAction()
+            this.loadedAction()
         })
 
         // Killer
@@ -600,7 +611,7 @@ class Level1 extends Scene {
 
             this.scene.add(model)
 
-            //this.loadedAction()
+            this.loadedAction()
         })
 
         // The Deceased
@@ -619,7 +630,7 @@ class Level1 extends Scene {
 
             this.scene.add(model)
 
-            //this.loadedAction()
+            this.loadedAction()
         })
 
     }
@@ -696,6 +707,15 @@ class Level1 extends Scene {
         this.createColorLight(4, 2, { r: 0, g: 0.35, b: 1 }, "right")
     }
 
+    guiInit = () => {
+        this.game.action("loading_gui_none", true, 3)
+    }
+
+    loadedAction = () => {
+        this.loaded++
+        if (this.loaded >= this.maxLoad) this.guiInit()
+    }
+
     private setupTexture = (
         texture: Texture,
         x: number,
@@ -729,7 +749,7 @@ class Level1 extends Scene {
         // Create Player
         this.player = new Player(this.physics)
 
-        this.game.action("loading_gui_none", true, 0)
+        //this.game.action("loading_gui_none", true, 0)
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
