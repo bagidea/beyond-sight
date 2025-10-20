@@ -19,7 +19,11 @@ import {
     Mesh,
     PointLight,
     Group,
-    BoxGeometry
+    BoxGeometry,
+    AnimationClip,
+    Vector3,
+    AnimationMixer,
+    MeshStandardMaterial
 } from "three/webgpu"
 
 import type {
@@ -44,7 +48,8 @@ import {
 import type { ShaderNodeObject } from "three/tsl"
 
 import {
-    RapierPhysics
+    RapierPhysics,
+    SkeletonUtils
 } from "three/examples/jsm/Addons.js"
 
 import type {
@@ -65,6 +70,10 @@ class Level1 extends Scene {
     ]
 
     private player: Player = null!
+
+    // Characters mockup
+    private mixers: AnimationMixer[] = []
+    private mage: Object3D<Object3DEventMap> = null!
 
     physicsInit = async() => {
         this.physics = await RapierPhysics()
@@ -344,6 +353,224 @@ class Level1 extends Scene {
             //this.scene.add(collider)
             this.physics.addMesh(collider, 0)
         })
+
+        // Characters mockup
+
+        // Skeleton Warrior
+        Plugin.gltfLoader.load("models/skeleton_warrior.glb", (data: GLTF) => {
+            const group: Group<Object3DEventMap> = data.scene
+            const animations: AnimationClip[] = data.animations
+
+            const positions: Array<Vector3> = [
+                new Vector3(-2, 0, 20),
+                new Vector3(24, 0, 16)
+            ]
+
+            const rotationYs: Array<number> = [
+                MathUtils.degToRad(45),
+                MathUtils.degToRad(-40),
+            ]
+
+            const defaultAnimations: Array<number> = [ 5, 2 ]
+
+            for (let i: number = 0; i < 2; i++) {
+                const model: Object3D<Object3DEventMap> = SkeletonUtils.clone(group)
+
+                model.position.copy(positions[i])
+                model.rotation.y = rotationYs[i]
+
+                const material: MeshStandardMaterial = new MeshStandardMaterial()
+                let isNew: boolean = false
+
+                model.traverse((object: Object3D) => {
+                    if (object instanceof Mesh) {
+                        switch (object.name) {
+                            case "Eyes":
+                                object.material.emissiveIntensity = 0.5
+                                break
+                            case "Helmet":
+                            case "Axe":
+                            case "Shield":
+                                if (!isNew) {
+                                    isNew = true
+                                    material.map = object.material.map
+                                    material.roughness = 0.2
+                                    material.metalness = 0.5
+                                }
+
+                                object.material = material
+                                break
+                        }
+                    }
+                })
+
+                const mixer: AnimationMixer = new AnimationMixer(model)
+                //mixer.timeScale = 0.5
+                mixer.clipAction(animations[defaultAnimations[i]]).play()
+
+                this.mixers.push(mixer)
+
+                this.scene.add(model)
+            }
+
+            //this.loadedAction()
+        })
+
+        // Skeleton Minion
+        Plugin.gltfLoader.load("models/skeleton_minion.glb", (data: GLTF) => {
+            const group: Group<Object3DEventMap> = data.scene
+            const animations: AnimationClip[] = data.animations
+
+            const positions: Array<Vector3> = [
+                new Vector3(13, 0, -4),
+                new Vector3(10, 0, 22)
+            ]
+
+            const rotationYs: Array<number> = [
+                0,
+                MathUtils.degToRad(-120),
+            ]
+
+            const defaultAnimations: Array<number> = [ 5, 2 ]
+
+            for (let i: number = 0; i < 2; i++) {
+                const model: Object3D<Object3DEventMap> = SkeletonUtils.clone(group)
+
+                model.position.copy(positions[i])
+                model.rotation.y = rotationYs[i]
+
+                model.traverse((object: Object3D) => {
+                    if (object instanceof Mesh) {
+                        switch (object.name) {
+                            case "Eyes":
+                                object.material.emissiveIntensity = 0.5
+                                break
+                            case "Blade":
+                            case "Shield":
+                                object.material.roughness = 0.2
+                                object.material.metalness = 0.5
+                                break
+                        }
+                    }
+                })
+
+                const mixer: AnimationMixer = new AnimationMixer(model)
+                //mixer.timeScale = 0.5
+                mixer.clipAction(animations[defaultAnimations[i]]).play()
+
+                this.mixers.push(mixer)
+
+                this.scene.add(model)
+            }
+
+            //this.loadedAction()
+        })
+
+        // Skeleton Rogue
+        Plugin.gltfLoader.load("models/skeleton_rogue.glb", (data: GLTF) => {
+            const group: Group<Object3DEventMap> = data.scene
+            const animations: AnimationClip[] = data.animations
+
+            const positions: Array<Vector3> = [
+                new Vector3(20, 0, 32.5),
+                new Vector3(20, 0, 3)
+            ]
+
+            const rotationYs: Array<number> = [
+                MathUtils.degToRad(-170),
+                MathUtils.degToRad(-120),
+            ]
+
+            const defaultAnimations: Array<number> = [ 5, 2 ]
+
+            for (let i: number = 0; i < 2; i++) {
+                const model: Object3D<Object3DEventMap> = SkeletonUtils.clone(group)
+
+                model.position.copy(positions[i])
+                model.rotation.y = rotationYs[i]
+
+                model.traverse((object: Object3D) => {
+                    if (object instanceof Mesh) {
+                        switch (object.name) {
+                            case "Eyes":
+                                object.material.emissiveIntensity = 0.5
+                                break
+                            case "Crossbow":
+                            case "Quiver":
+                                object.material.roughness = 0.2
+                                object.material.metalness = 0.5
+                                break
+                        }
+                    }
+                })
+
+                const mixer: AnimationMixer = new AnimationMixer(model)
+                //mixer.timeScale = 0.5
+                mixer.clipAction(animations[defaultAnimations[i]]).play()
+
+                this.mixers.push(mixer)
+
+                this.scene.add(model)
+            }
+
+
+            //this.loadedAction()
+        })
+
+        // Skeleton Mage
+        Plugin.gltfLoader.load("models/skeleton_mage.glb", (data: GLTF) => {
+            const group: Group<Object3DEventMap> = data.scene
+            const animations: AnimationClip[] = data.animations
+
+            const positions: Array<Vector3> = [
+                new Vector3(-1.5, 0, 42),
+                new Vector3(40, 0, 20)
+            ]
+
+            const rotationYs: Array<number> = [
+                MathUtils.degToRad(170),
+                MathUtils.degToRad(-90),
+            ]
+
+            const defaultAnimations: Array<number> = [ 2, 3 ]
+
+            for (let i: number = 0; i < 2; i++) {
+                const model: Object3D<Object3DEventMap> = SkeletonUtils.clone(group)
+
+                model.position.copy(positions[i])
+                model.rotation.y = rotationYs[i]
+
+                model.traverse((object: Object3D) => {
+                    if (object instanceof Mesh) {
+                        switch (object.name) {
+                            case "Eyes":
+                                object.material.emissiveIntensity = 0.5
+                                break
+                            case "Staff":
+                                object.material.roughness = 0.2
+                                object.material.metalness = 0.3
+                                break
+                        }
+                    }
+                })
+
+                const mixer: AnimationMixer = new AnimationMixer(model)
+                //mixer.timeScale = 0.5
+                mixer.clipAction(animations[defaultAnimations[i]]).play()
+
+                if (i == 1) {
+                    mixer.timeScale = 0.2
+                    mixer.clipAction(animations[5]).play()
+                    this.mage = model
+                }
+
+                this.mixers.push(mixer)
+
+                this.scene.add(model)
+            }
+
+            //this.loadedAction()
+        })
     }
 
     /*createTopLight = (x: number, z: number) => {
@@ -455,6 +682,12 @@ class Level1 extends Scene {
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
+        if (this.mage) this.mage.position.y = Math.sin(_time * 0.002) * 0.5 + 1.25
+
+        this.mixers.forEach((mixer: AnimationMixer) => {
+            mixer.update(_delta)
+        })
+
         if (this.player) this.player.update(_delta)
     }
 }

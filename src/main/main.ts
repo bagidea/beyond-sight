@@ -23,14 +23,6 @@ class Main extends Game {
                 this.gameScene = new Level1()
 
                 break
-            case "level_2":
-                break
-            case "level_3":
-                break
-            case "level_4":
-                break
-            case "level_5":
-                break
             default:
                 console.log("Not found scene name "+name)
         }
