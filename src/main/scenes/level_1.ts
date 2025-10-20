@@ -1,5 +1,6 @@
 import Plugin from "@engine/plugin"
 import Scene from "@engine/scene"
+import Player from "@engine/player"
 
 import {
     PlaneGeometry,
@@ -52,6 +53,8 @@ class Level1 extends Scene {
         [ 1, 0, 0, 0, 0 ]
     ]
 
+    private player: Player = null!
+
     createMap = async() => {
         const dummy: Object3D = new Object3D()
         dummy.rotation.x = MathUtils.degToRad(-90)
@@ -75,7 +78,8 @@ class Level1 extends Scene {
         groundMaterial.roughnessNode = texture(groundTexture).mul(0.45)
         groundMaterial.metalnessNode = float(0.9)
 
-        const grounds: InstancedMesh = new InstancedMesh(groundGeometry, groundMaterial, 25)
+        let groundIndex: number = 0
+        const grounds: InstancedMesh = new InstancedMesh(groundGeometry, groundMaterial, 11) // default count 25
         grounds.frustumCulled = false
         //grounds.receiveShadow = true
         this.scene.add(grounds)
@@ -98,7 +102,8 @@ class Level1 extends Scene {
         wallMaterial.roughnessNode = float(0.4)
         wallMaterial.metalnessNode = float(0.2)
 
-        const walls: InstancedMesh = new InstancedMesh(wallGeometry, wallMaterial, 100)
+        let wallIndex: number = 0
+        const walls: InstancedMesh = new InstancedMesh(wallGeometry, wallMaterial, 44) // default count 100
         //walls.receiveShadow = true
         //walls.castShadow = true
         walls.frustumCulled = false
@@ -123,7 +128,8 @@ class Level1 extends Scene {
                     }
 
                     subDummy.updateMatrix()
-                    walls.setMatrixAt(z * 5 * 4 + x * 4, subDummy.matrix)
+                    //walls.setMatrixAt(z * 5 * 4 + x * 4, subDummy.matrix)
+                    walls.setMatrixAt(wallIndex++, subDummy.matrix)
 
                     if (this.maps[z - 1]?.[x] === 1) {
                         subDummy.position.set(0, -1000, 0)
@@ -135,7 +141,8 @@ class Level1 extends Scene {
                     }
 
                     subDummy.updateMatrix()
-                    walls.setMatrixAt(z * 5 * 4 + x * 4 + 1, subDummy.matrix)
+                    //walls.setMatrixAt(z * 5 * 4 + x * 4 + 1, subDummy.matrix)
+                    walls.setMatrixAt(wallIndex++, subDummy.matrix)
 
                     if (this.maps[z][x - 1] === 1) {
                         subDummy.position.set(0, -1000, 0)
@@ -147,7 +154,8 @@ class Level1 extends Scene {
                     }
 
                     subDummy.updateMatrix()
-                    walls.setMatrixAt(z * 5 * 4 + x * 4 + 2, subDummy.matrix)
+                    //walls.setMatrixAt(z * 5 * 4 + x * 4 + 2, subDummy.matrix)
+                    walls.setMatrixAt(wallIndex++, subDummy.matrix)
 
                     if (this.maps[z][x + 1] === 1) {
                         subDummy.position.set(0, -1000, 0)
@@ -159,8 +167,11 @@ class Level1 extends Scene {
                     }
 
                     subDummy.updateMatrix()
-                    walls.setMatrixAt(z * 5 * 4 + x * 4 + 3, subDummy.matrix)
-                } else {
+                    //walls.setMatrixAt(z * 5 * 4 + x * 4 + 3, subDummy.matrix)
+                    walls.setMatrixAt(wallIndex++, subDummy.matrix)
+
+                    grounds.setMatrixAt(groundIndex++, dummy.matrix) // optimized instancedMesh
+                } /*else {
                     dummy.position.set(0, -1000, 0)
                     dummy.scale.set(0, 0, 0)
                     dummy.updateMatrix()
@@ -169,9 +180,9 @@ class Level1 extends Scene {
                     walls.setMatrixAt(z * 5 * 4 + x * 4 + 1, dummy.matrix)
                     walls.setMatrixAt(z * 5 * 4 + x * 4 + 2, dummy.matrix)
                     walls.setMatrixAt(z * 5 * 4 + x * 4 + 3, dummy.matrix)
-                }
+                }*/
 
-                grounds.setMatrixAt(z * 5 + x, dummy.matrix)
+                //grounds.setMatrixAt(z * 5 + x, dummy.matrix) // default calculate
             }
         }
     }
@@ -364,10 +375,14 @@ class Level1 extends Scene {
         // Lightings
         this.createLighting()
 
+        // Create Player
+        this.player = new Player()
+
         this.game.action("loading_gui_none", true, 0)
     }
 
     update = (_time: DOMHighResTimeStamp, _delta: number) => {
+        if (this.player) this.player.update(_delta)
     }
 }
 

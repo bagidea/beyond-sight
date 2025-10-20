@@ -14,7 +14,8 @@ import {
     Mesh,
     Light,
     //PCFShadowMap,
-    InstancedMesh
+    InstancedMesh,
+    Vector2
 } from "three/webgpu"
 
 import {
@@ -51,12 +52,17 @@ class Game {
 
     private rotationX: number = 0
     private rotationY: number = 0
+    
+    private dx_temp: number = 0
+    private dy_temp: number = 0
 
     private forward: boolean = false
     private back: boolean = false
     private left: boolean = false
     private right: boolean = false
     private moveSpeed: boolean = false
+
+    controlEnabled: boolean = false
 
     constructor() {
         if (Game.instanced) return Game.instanced
@@ -164,12 +170,26 @@ class Game {
         this.rotationY = rotationY
     }
 
+    pointerMove = (dx: number, dy: number) => {
+        this.dx_temp = dx
+        this.dy_temp = dy
+    }
+
+    triggerMove = () => {
+        const result: Vector2 = new Vector2(this.dx_temp, this.dy_temp)
+
+        this.dx_temp = 0
+        this.dy_temp = 0
+
+        return result
+    }
+
     pointerDrag = (
         dx: number,
         dy: number,
         buttons: number
     ) => {
-        if (!this.camera) return
+        if (!this.camera || !this.controlEnabled) return
 
         if (buttons & 2) {
             this.rotationX -= dy
@@ -192,7 +212,7 @@ class Game {
     }
 
     cameraMove = (_delta: number) => {
-        if (!this.camera) return
+        if (!this.camera || !this.controlEnabled) return
 
         const speed: number = (5 * _delta) * (this.moveSpeed ? 5 : 1)
 
@@ -215,6 +235,8 @@ class Game {
         right: boolean,
         moveSpeed: boolean
     ) => {
+        if (!this.camera || !this.controlEnabled) return
+
         this.forward = forward
         this.back = back
         this.left = left

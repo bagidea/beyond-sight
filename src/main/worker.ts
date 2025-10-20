@@ -35,17 +35,16 @@ self.onmessage = (e: MessageEvent) => {
 
             break
         case "pointermove":
-            if (isDragging) {
-                const dx: number = (e.data.x - lastX) * sensitivity
-                const dy: number = (e.data.y - lastY) * sensitivity
+            const dx: number = (e.data.x - lastX) * sensitivity
+            const dy: number = (e.data.y - lastY) * sensitivity
 
-                lastX = e.data.x
-                lastY = e.data.y
+            lastX = e.data.x
+            lastY = e.data.y
 
-                game.pointerDrag(dx, dy, e.data.buttons)
-            }
-
+            game.pointerMove(dx, dy)
             game.pointerUpdate(e.data.x / e.data.width, e.data.y / e.data.height)
+
+            if (isDragging) game.pointerDrag(dx, dy, e.data.buttons)
 
             break
         case "key":
