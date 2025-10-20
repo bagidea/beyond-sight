@@ -2,6 +2,7 @@ import Plugin from "./plugin"
 import Character from "./character"
 
 import {
+    AnimationAction,
     AnimationClip,
     AnimationMixer,
     MathUtils,
@@ -25,9 +26,14 @@ class Player extends Character {
     private model: Group<Object3DEventMap> = null!
     private mixer: AnimationMixer = null!
 
+    private animations: Map<string, AnimationClip> = new Map<string, AnimationClip>()
+    private actions: Map<string, AnimationAction> = new Map<string, AnimationAction>()
+
     private cameraPosition: Spherical = new Spherical(20, MathUtils.degToRad(30))
 
     private speed: number = 5
+
+    private state: string = "Idle"
 
     constructor(physics: RapierPhysicsObject) {
         super(physics)
@@ -44,7 +50,7 @@ class Player extends Character {
                 if (object instanceof Mesh) {
                     switch (object.name) {
                         case "Eyes":
-                            object.material.emissiveIntensity = 0.3
+                            object.material.emissiveIntensity = 0.5
                             break
                         case "Helmet":
                         case "Axe":
@@ -62,11 +68,21 @@ class Player extends Character {
                 }
             })
 
-            const animations: AnimationClip[] = data.animations
-
             this.mixer = new AnimationMixer(this.model)
-            this.mixer.timeScale = 0.5
-            this.mixer.clipAction(animations[2]).play()
+            //this.mixer.timeScale = 0.5
+
+            data.animations.forEach((clip: AnimationClip) => {
+                this.animations.set(clip.name, clip)
+
+                if (
+                    clip.name === "Idle" ||
+                    clip.name === "Run"
+                ) {
+                    this.actions.set(clip.name, this.mixer.clipAction(this.animations.get(clip.name) as AnimationClip))
+                }
+            })
+
+            this.actions.get("Idle")?.play()
 
             this.game.scene?.add(this.model)
         })
@@ -112,7 +128,7 @@ class Player extends Character {
             this.model.position.y -= 1
 
             const targetRotation: Quaternion = new Quaternion()
-            targetRotation.setFromUnitVectors(new Vector3(0, 0, 1), forward)
+            targetRotation.setFromUnitVectors(new Vector3(0, 0, 1), moveDirection)
 
             if (
                 this.game.keysState["KeyW"] ||
@@ -121,6 +137,31 @@ class Player extends Character {
                 this.game.keysState["KeyD"]
             ) {
                 this.model.quaternion.slerp(targetRotation, 0.1)
+
+                if (this.state !== "Run") {
+                    this.state = "Run"
+                    this.actions.get("Idle")?.fadeOut(0.2)
+                    this.actions.get("Run")?.reset()
+                    this.actions.get("Run")?.fadeIn(0.2).play()
+                }
+            } else {
+                if (this.state !== "Idle") {
+                    this.state = "Idle"
+                    this.actions.get("Run")?.fadeOut(0.2)
+                    this.actions.get("Idle")?.reset()
+                    this.actions.get("Idle")?.fadeIn(0.2).play()
+                }
+            }
+
+            // Run
+            if (this.game.keysState["ShiftLeft"]) {
+                if (this.state === "Run") this.mixer.timeScale = 2
+                else this.mixer.timeScale = 1
+
+                this.speed = 10
+            } else {
+                this.mixer.timeScale = 1
+                this.speed = 5
             }
 
             //////////////////

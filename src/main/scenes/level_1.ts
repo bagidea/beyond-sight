@@ -130,9 +130,9 @@ class Level1 extends Scene {
         this.scene.add(reflection.target)
 
         groundMaterial.colorNode = color(1, 1, 1)
-        groundMaterial.envNode = reflection.mul(0.2)
-        groundMaterial.roughnessNode = texture(groundTexture).mul(0.45)
-        groundMaterial.metalnessNode = float(0.9)
+        groundMaterial.envNode = reflection.mul(0.5)
+        groundMaterial.roughnessNode = texture(groundTexture).mul(0.4)
+        groundMaterial.metalnessNode = float(0.8)
 
         let groundIndex: number = 0
         const grounds: InstancedMesh = new InstancedMesh(groundGeometry, groundMaterial, 11) // default count 25
@@ -329,6 +329,20 @@ class Level1 extends Scene {
             })
 
             this.scene.add(model)
+
+
+            // Collider
+            const collider: Mesh = new Mesh(
+                new BoxGeometry(2.5, 1, 2.5),
+                new MeshStandardNodeMaterial()
+            )
+
+            collider.position.copy(model.position)
+            collider.position.y = 1
+            collider.quaternion.copy(model.quaternion)
+
+            //this.scene.add(collider)
+            this.physics.addMesh(collider, 0)
         })
     }
 

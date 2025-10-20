@@ -115,6 +115,10 @@ window.onload = () => {
                 code: e.code,
                 pressed: true
             })
+
+            if (keys["KeyL"]) {
+                //canvas.requestPointerLock()
+            }
         }
     })
 
