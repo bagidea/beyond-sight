@@ -28,7 +28,7 @@ class Player extends Character {
     private animations: Map<string, AnimationClip> = new Map<string, AnimationClip>()
     private actions: Map<string, AnimationAction> = new Map<string, AnimationAction>()
 
-    private cameraPosition: Spherical = new Spherical(20, MathUtils.degToRad(30))
+    private cameraPosition: Spherical = new Spherical(15, MathUtils.degToRad(30))
 
     private speed: number = 5
 

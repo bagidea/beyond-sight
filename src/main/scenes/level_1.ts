@@ -523,7 +523,7 @@ class Level1 extends Scene {
             const animations: AnimationClip[] = data.animations
 
             const positions: Array<Vector3> = [
-                new Vector3(-1.5, 0, 42),
+                new Vector3(-1.5, 0, 41.5),
                 new Vector3(40, 0, 20)
             ]
 
@@ -571,6 +571,57 @@ class Level1 extends Scene {
 
             //this.loadedAction()
         })
+
+        // Killer
+        Plugin.gltfLoader.load("models/killer.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(34, 0, 16)
+            model.rotation.y = MathUtils.degToRad(-60)
+
+            model.traverse((object: Object3D) => {
+                if (object instanceof Mesh) {
+                    switch (object.name) {
+                        case "Eyes":
+                            object.material.emissiveIntensity = 0.5
+                            break
+                        default:
+                            object.material.roughness = 0.7
+                    }
+                }
+            })
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.timeScale = 0.3
+            mixer.clipAction(animations[5]).play()
+
+            this.mixers.push(mixer)
+
+            this.scene.add(model)
+
+            //this.loadedAction()
+        })
+
+        // The Deceased
+        Plugin.gltfLoader.load("models/the_deceased.glb", (data: GLTF) => {
+            const model: Group<Object3DEventMap> = data.scene
+            model.position.set(3, 0, 18)
+            model.rotation.y = MathUtils.degToRad(45)
+
+            const animations: AnimationClip[] = data.animations
+
+            const mixer: AnimationMixer = new AnimationMixer(model)
+            mixer.clipAction(animations[2]).play()
+
+            mixer.update(0)
+            //this.mixers.push(mixer)
+
+            this.scene.add(model)
+
+            //this.loadedAction()
+        })
+
     }
 
     /*createTopLight = (x: number, z: number) => {
