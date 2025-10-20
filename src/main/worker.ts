@@ -41,7 +41,8 @@ self.onmessage = (e: MessageEvent) => {
             lastX = e.data.x
             lastY = e.data.y
 
-            game.pointerMove(dx, dy)
+            //game.pointerMove(dx, dy)
+            game.pointerMove(e.data.moveX * sensitivity, e.data.moveY * sensitivity, e.data.buttons)
             game.pointerUpdate(e.data.x / e.data.width, e.data.y / e.data.height)
 
             if (isDragging) game.pointerDrag(dx, dy, e.data.buttons)
@@ -59,6 +60,10 @@ self.onmessage = (e: MessageEvent) => {
                 keysState["KeyD"],
                 keysState["ShiftLeft"]
             )
+
+            break
+        case "mouselock":
+            game.mouseLock = e.data.isLock
 
             break
         case "clearscene":

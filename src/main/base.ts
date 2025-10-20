@@ -96,6 +96,8 @@ window.onload = () => {
             type: "pointermove",
             x: e.clientX,
             y: e.clientY,
+            moveX: e.movementX,
+            moveY: e.movementY,
             width: window.innerWidth,
             height: window.innerHeight,
             buttons: e.buttons
@@ -117,7 +119,21 @@ window.onload = () => {
             })
 
             if (keys["KeyL"]) {
-                //canvas.requestPointerLock()
+                if (document.pointerLockElement === canvas) {
+                    document.exitPointerLock()
+
+                    worker.postMessage({
+                        type: "mouselock",
+                        isLock: false
+                    })
+                } else {
+                    canvas.requestPointerLock()
+
+                    worker.postMessage({
+                        type: "mouselock",
+                        isLock: true
+                    })
+                }
             }
         }
     })

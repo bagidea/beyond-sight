@@ -14,8 +14,7 @@ import {
     Mesh,
     Light,
     //PCFShadowMap,
-    InstancedMesh,
-    Vector2
+    InstancedMesh
 } from "three/webgpu"
 
 import {
@@ -55,8 +54,10 @@ class Game {
     
     private dx_temp: number = 0
     private dy_temp: number = 0
+    private buttons_temp: number = 0
 
     keysState: Record<string, boolean> = {}
+    mouseLock: boolean = false
 
     private forward: boolean = false
     private back: boolean = false
@@ -172,16 +173,22 @@ class Game {
         this.rotationY = rotationY
     }
 
-    pointerMove = (dx: number, dy: number) => {
+    pointerMove = (
+        dx: number,
+        dy: number,
+        buttons: number
+    ) => {
         this.dx_temp = dx
         this.dy_temp = dy
+        this.buttons_temp = buttons
     }
 
     triggerMove = () => {
-        const result: Vector2 = new Vector2(this.dx_temp, this.dy_temp)
+        const result: Vector3 = new Vector3(this.dx_temp, this.dy_temp, this.buttons_temp)
 
         this.dx_temp = 0
         this.dy_temp = 0
+        this.buttons_temp = 0
 
         return result
     }

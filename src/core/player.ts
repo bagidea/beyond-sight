@@ -10,7 +10,6 @@ import {
     MeshStandardMaterial,
     Object3D,
     Spherical,
-    Vector2,
     Vector3
 } from "three/webgpu"
 
@@ -91,12 +90,14 @@ class Player extends Character {
     update = (_delta: number) => {
         if (this.mixer) this.mixer.update(_delta)
 
-        const drag: Vector2 = this.game.triggerMove()
+        const drag: Vector3 = this.game.triggerMove()
 
         if (drag.x || drag.y) {
-            this.cameraPosition.phi -= drag.y
-            this.cameraPosition.phi = Math.max(MathUtils.degToRad(20), Math.min(MathUtils.degToRad(45), this.cameraPosition.phi))
-            this.cameraPosition.theta -= drag.x
+            if (this.game.mouseLock || drag.z == 2) {
+                this.cameraPosition.phi -= drag.y
+                this.cameraPosition.phi = Math.max(MathUtils.degToRad(30), Math.min(MathUtils.degToRad(50), this.cameraPosition.phi))
+                this.cameraPosition.theta -= drag.x
+            }
         }
 
         if (this.game.camera && this.isReady() && this.model) {
