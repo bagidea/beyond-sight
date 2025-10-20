@@ -13,9 +13,10 @@ import {
     Vector3
 } from "three/webgpu"
 
-import type {
-    Object3DEventMap,
-    Group
+import {
+    type Object3DEventMap,
+    type Group,
+    Quaternion
 } from "three/webgpu"
 
 import type { GLTF, RapierPhysicsObject } from "three/examples/jsm/Addons.js"
@@ -25,6 +26,8 @@ class Player extends Character {
     private mixer: AnimationMixer = null!
 
     private cameraPosition: Spherical = new Spherical(20, MathUtils.degToRad(30))
+
+    private speed: number = 5
 
     constructor(physics: RapierPhysicsObject) {
         super(physics)
@@ -99,12 +102,30 @@ class Player extends Character {
             if (this.game.keysState["KeyA"]) moveDirection.sub(right)
             if (this.game.keysState["KeyD"]) moveDirection.add(right)
 
-            this.updatePhysics(_delta, moveDirection)
+            if (moveDirection.lengthSq() > 0) moveDirection.normalize()
+
+            this.updatePhysics(this.speed * _delta, moveDirection)
 
             //////////////////
 
             this.model.position.copy(this.character.position)
             this.model.position.y -= 1
+
+            const targetRotation: Quaternion = new Quaternion()
+            targetRotation.setFromUnitVectors(new Vector3(0, 0, 1), forward)
+
+            if (
+                this.game.keysState["KeyW"] ||
+                this.game.keysState["KeyS"] ||
+                this.game.keysState["KeyA"] ||
+                this.game.keysState["KeyD"]
+            ) {
+                this.model.quaternion.slerp(targetRotation, 0.1)
+            }
+
+            //////////////////
+
+            // Carmera
 
             const camPos: Vector3 = new Vector3().setFromSpherical(this.cameraPosition)
 

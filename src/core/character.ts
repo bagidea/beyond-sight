@@ -48,9 +48,8 @@ class Character {
         return this.physics && this.controller && this.character
     }
 
-    updatePhysics = (_delta: number, moveDirection: Vector3 = new Vector3()) => {
-        //const moveVector = new this.physics.RAPIER.Vector3(0, 0, -1 * speed)
-        const moveVector = new this.physics.RAPIER.Vector3(moveDirection.x * _delta, moveDirection.y, moveDirection.z * _delta)
+    updatePhysics = (speed: number, moveDirection: Vector3 = new Vector3()) => {
+        const moveVector = new this.physics.RAPIER.Vector3(moveDirection.x * speed, moveDirection.y * speed, moveDirection.z * speed)
 
         this.controller.computeColliderMovement(this.character.userData.collider, moveVector)
 
